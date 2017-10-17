@@ -1,0 +1,11 @@
+language: python
+python:
+  - "3.6"
+install: 
+  - "pip install -r requirements.txt"
+  #TODO: setup.py
+script:
+  - "pytest tests/"
+after_success:
+  - "pip install python-coveralls"
+  - "coveralls"
