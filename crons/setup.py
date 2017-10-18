@@ -92,7 +92,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'navitron_system_kills=navitron_crons.navitron_system_kills:run_main',
+            'navitron_system_stats=navitron_crons.navitron_system_stats:run_main',
+            'navitron_sde=navitron_crons.navitron_sde:run_main',
         ]
     },
     install_requires=[

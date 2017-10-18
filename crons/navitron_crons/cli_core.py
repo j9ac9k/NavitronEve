@@ -1,32 +1,27 @@
-"""navitron_system_kills.py: cronjob for snapshotting /universe/system_kills/"""
+"""cli_core.py: basic metaclass for handling generic tool layout
+
+Acts as global namespace + parent-framework for CLI apps
+
+"""
 from os import path
-from datetime import datetime
-import warnings
 
 from plumbum import cli
-import pandas as pd
-import requests
 import prosper.common.prosper_logging as p_logger
 import prosper.common.prosper_config as p_config
 
-import navitron_crons.exceptions as exceptions
-import navitron_crons.connections as connections
-import navitron_crons._version as _version
+DEFAULT_LOGGER = p_logger.DEFAULT_LOGGER
 
 HERE = path.abspath(path.dirname(__file__))
 CONFIG = p_config.ProsperConfig(path.join(HERE, 'navitron_crons.cfg'))
 
-class NavitronSystemKills(cli.Application):
-    """fetch and store /universe/system_kills/"""
-    PROGNAME = 'navitron_system_kills'
-    VERSION = _version.__version__
+class NavitronApplication(cli.Application):
+    """parent metaclass for CLI applications
 
-    __log_builder = p_logger.ProsperLogger(
-        PROGNAME,
-        CONFIG.get('LOGGING', 'log_path'),
-        config_obj=CONFIG
-    )
-    logger = p_logger.DEFAULT_LOGGER
+    Load default args and CLI environment variables here
+
+    """
+    logger = DEFAULT_LOGGER
+    config = CONFIG
 
     debug = cli.Flag(
         ['d', '--debug'],
@@ -53,27 +48,19 @@ class NavitronSystemKills(cli.Application):
         """dumps config file to stdout for piping into config file"""
         exit()
 
-    def load_logger(self):
+    def load_logger(self, progname):
         """build a logging object for the script to use"""
+        log_builder = p_logger.ProsperLogger(
+            progname,
+            self.config.get('LOGGING', 'log_path'),
+            config_obj=self.config
+        )
         if self.verbose:
-            self.__log_builder.configure_debug_logger()
+            log_builder.configure_debug_logger()
         if not self.debug:
             try:
-                self.__log_builder.configure_discord_logger()
+                log_builder.configure_discord_logger()
             except Exception:
                 warnings.warn('Unable to config discord logger', RuntimeWarning)
 
-        self.logger = self.__log_builder.logger
-
-    def main(self):
-        """application runtime"""
-        self.load_logger()
-
-        self.logger.info('HELLO WORLD')
-
-def run_main():
-    """hook for running entry_points"""
-    NavitronSystemKills.run()
-
-if __name__ == '__main__':
-    run_main()
+        self.logger = log_builder.logger
