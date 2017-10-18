@@ -17,6 +17,7 @@ Accessing Individual Cron Scripts
 All cron scripts are exposed via ``entry_points``.  They should be available by name (no ``.py``) once installed.
 
     ``navitron_system_kills -v`` 
+    
     Runs: ``python NavitronEve/crons/navitron_crons/navitron_system_kills.py -v``
 
 Config Management
