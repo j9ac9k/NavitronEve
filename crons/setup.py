@@ -92,14 +92,16 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'navitron_maps=navitron_crons.navitron_maps:RunMain',
+            'navitron_system_kills=navitron_crons.navitron_system_kills:run_main',
         ]
     },
     install_requires=[
-        'prospercommon',
-        'plumbum',
-        'requests',
-        'esipy'
+        'prospercommon~=1.1.1',
+        'plumbum~=1.6.3',
+        'requests>=2.18.4,<3',
+        'esipy~=0.1.8',
+        'pandas~=0.20.3',
+        'pymongo~=3.5.1'
 
     ],
     tests_require=[
