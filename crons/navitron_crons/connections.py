@@ -1,6 +1,7 @@
 """connections.py: general tools for all cronjobs: db connection and requests"""
 from os import path
 import warnings
+import json  # TODO: ujson?
 
 import requests
 import pymongo
@@ -44,6 +45,52 @@ def get_esi(
 
     return data
 
+def debug_dump(
+        raw_data,
+        file_name
+):
+    """drop data to file rather than to mongodb
+
+    Args:
+        raw_data (:obj:`list`): JSON-serializable data
+        file_name (str): dump filename (database_collection)
+
+    """
+    warnings.warn('Writing data to disk, not database', RuntimeWarning)
+    file_name = '{}_{}.json'.format(file_name, datetime.utcnow().isoformat())
+    with open(file_name, 'w') as dump_fh:
+        json.dump(raw_data, dump_fh)
+
+def dump_to_db(
+        data_df,
+        collection_name,
+        conn,
+        debug=False,
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """push data to mongodb
+
+    Args:
+        data_df (:obj:`pandas.DataFrame`): data to write to db
+        collection_name (str): table to write data to
+        conn (:obj:`MongoConnection`): database handle to write with
+        debug (bool, optional): actually write to db?  Or dump to file
+        logger (:obj:`logging.logger`, optional): logging handle
+
+    Returns:
+        None?
+
+    """
+    raw_data = data_df.to_dict(orient='records')
+    if debug:
+        logger.warning('DEBUG MODE ENABLED: writing data to disk')
+        debug_dump(
+            raw_data
+            '{}_{}'.format(conn.database, collection_name)
+        )
+        return
+
+
 
 CONNECTION_STR = 'mongodb://{username}:{{password}}@{hostname}:{port}/{database}'
 class MongoConnection(object):
@@ -62,7 +109,8 @@ class MongoConnection(object):
         self.logger = logger
         self.ready_to_query = False
         self.password = ''
-        self.mongo_address = self._load_connection(config_obj)
+        self.database = config.get('MONGO', database')
+        self.mongo_address = self._load_connection(config)
 
     def _load_connection(
             self,
@@ -82,6 +130,8 @@ class MongoConnection(object):
             str: mongo connection string
 
         """
+        # TODO: early return for "mongo conn str" in config
+
         self.ready_to_query = all([
             config.get('MONGO', 'username'),
             config.get('MONGO', 'password'),

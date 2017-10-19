@@ -80,6 +80,10 @@ class NavitronSystemStats(cli_core.NavitronApplication):
     def main(self):
         """application runtime"""
         self.load_logger(self.PROGNAME)
+        self.conn = connections.MongoConnection(
+            self.config,
+            logger=self.logger  # note: order specific, logger may not be loaded yet
+        )
 
         self.logger.info('HELLO WORLD')
 
@@ -108,6 +112,7 @@ class NavitronSystemStats(cli_core.NavitronApplication):
             self.VERSION
         )
         self.logger.debug(system_info_df.head(5))
+
 
 def run_main():
     """hook for running entry_points"""

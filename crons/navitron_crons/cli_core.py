@@ -56,6 +56,7 @@ class NavitronApplication(cli.Application):
     """
     logger = DEFAULT_LOGGER
     config = CONFIG
+    conn = None
 
     debug = cli.Flag(
         ['d', '--debug'],
