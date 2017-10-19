@@ -88,16 +88,32 @@ class NavitronSystemStats(cli_core.NavitronApplication):
         self.logger.info('HELLO WORLD')
 
         self.logger.info('Fetching system info: Jumps')
-        system_jumps_df = get_system_jumps(
-            config=self.config,
-            logger=self.logger
-        )
+        try:
+            system_jumps_df = get_system_jumps(
+                config=self.config,
+                logger=self.logger
+            )
+        except Exception:
+            self.logger.error(
+                '%s: Unable to fetch system_jumps',
+                self.PROGNAME,
+                exc_info=True
+            )
+            raise
 
         self.logger.info('Fetching system info: Kills')
-        system_kills_df = get_system_kills(
-            config=self.config,
-            logger=self.logger
-        )
+        try:
+            system_kills_df = get_system_kills(
+                config=self.config,
+                logger=self.logger
+            )
+        except Exception:
+            self.logger.error(
+                '%s: Unable to fetch system_kills',
+                self.PROGNAME,
+                exc_info=True
+            )
+            raise
 
         self.logger.info('Merging system info')
         system_info_df = system_jumps_df.merge(
@@ -113,6 +129,43 @@ class NavitronSystemStats(cli_core.NavitronApplication):
         )
         self.logger.debug(system_info_df.head(5))
 
+        self.logger.info('Pushing data to database')
+        try:
+            connections.dump_to_db(
+                system_info_df,
+                self.PROGNAME,
+                self.conn,
+                debug=self.debug,
+                logger=self.logger
+            )
+        except Exception:
+            self.logger.error(
+                '%s: Unable to write data to database -- Attempting to write to disk',
+                self.PROGNAME,
+                exc_info=True
+            )
+            try:
+                connections.dump_to_db(
+                    system_info_df,
+                    self.PROGNAME,
+                    self.conn,
+                    debug=True,
+                    logger=self.logger
+                )
+            except Exception:
+                self.logger.critical(
+                    '%s: UNABLE TO SAVE DATA',
+                    self.PROGNAME,
+                    exc_info=True
+                )
+                raise
+            self.logger.error(
+                '%s: saved data safely to disk %s',
+                self.PROGNAME,
+                'TODO -- FILEPATH'
+            )
+
+        self.logger.info('%s: Complete -- Have a nice day', self.PROGNAME)
 
 def run_main():
     """hook for running entry_points"""

@@ -1,5 +1,6 @@
 """connections.py: general tools for all cronjobs: db connection and requests"""
 from os import path
+from datetime import datetime
 import warnings
 import json  # TODO: ujson?
 
@@ -57,7 +58,7 @@ def debug_dump(
 
     """
     warnings.warn('Writing data to disk, not database', RuntimeWarning)
-    file_name = '{}_{}.json'.format(file_name, datetime.utcnow().isoformat())
+    file_name = '{}__{}.json'.format(file_name, datetime.utcnow().isoformat())
     with open(file_name, 'w') as dump_fh:
         json.dump(raw_data, dump_fh)
 
@@ -85,8 +86,8 @@ def dump_to_db(
     if debug:
         logger.warning('DEBUG MODE ENABLED: writing data to disk')
         debug_dump(
-            raw_data
-            '{}_{}'.format(conn.database, collection_name)
+            raw_data,
+            '{}__{}'.format(conn.database, collection_name)
         )
         return
 
@@ -109,7 +110,7 @@ class MongoConnection(object):
         self.logger = logger
         self.ready_to_query = False
         self.password = ''
-        self.database = config.get('MONGO', database')
+        self.database = config.get('MONGO', 'database')
         self.mongo_address = self._load_connection(config)
 
     def _load_connection(
