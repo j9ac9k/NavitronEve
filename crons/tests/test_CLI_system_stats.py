@@ -11,7 +11,6 @@ import navitron_crons.navitron_system_stats as navitron_system_stats
 
 import helpers
 
-app_command = local['navitron_system_stats']
 
 def test_get_system_jumps():
     """validate expected behavior for navitron_system_stats.get_system_jumps()"""
@@ -55,15 +54,18 @@ def test_get_system_kills():
         pytest.xfail(
             'Unexpected values from get_system_kills(): {}'.format(unique_values))
 
+
 class TestCLI:
     """validate cli launches and works as users expect"""
+    app_command = local['navitron_system_stats']
+
     def test_help(self):
         """validate -h works"""
-        output = app_command('-h')
+        output = self.app_command('-h')
 
     def test_version(self):
         """validate app name/version are as expected"""
-        output = app_command('--version')
+        output = self.app_command('--version')
 
         assert output == '{app_name} {version}\n'.format(
             app_name=navitron_system_stats.__app_name__,

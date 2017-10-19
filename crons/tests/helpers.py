@@ -20,7 +20,7 @@ def build_logger():
     global LOGGER
     log_builder = p_logging.ProsperLogger(
         'navitron_test',
-        HERE
+        DUMP_FOLDER
     )
     log_builder.configure_debug_logger()
 
