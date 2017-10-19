@@ -16,7 +16,7 @@ def get_esi(
         source_route,
         endpoint_route,
         params=None,
-        header=DEFAULT_HEADER,
+        headers=DEFAULT_HEADER,
         logger=cli_core.DEFAULT_LOGGER
 ):
     """request wrapper for fetching ESI data
@@ -36,9 +36,9 @@ def get_esi(
         source_route=source_route,
         endpoint_route=endpoint_route
     )
-    logger.debug('--fetching URL: %s', address)
+    logger.info('--fetching URL: %s', address)
 
-    req = requests.get(address, params=params, header=header)
+    req = requests.get(address, params=params, headers=headers)
     req.raise_for_status()
     data = req.json()
 

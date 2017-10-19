@@ -13,6 +13,61 @@ import navitron_crons.cli_core as cli_core
 HERE = path.abspath(path.dirname(__file__))
 
 
+def get_system_jumps(
+        config,
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """fetches system jump information from ESI
+
+    Args:
+        config (:obj:`ProsperConfig`): config with [ENDPOINTS]
+        logger (:obj:`logging.logger`, optional): logging handle
+
+    Returns:
+        :obj:`pandas.DataFrame`: parsed data
+
+    """
+    logger.info('--fetching data from ESI')
+    raw_data = connections.get_esi(
+        config.get('ENDPOINTS', 'source'),
+        config.get('ENDPOINTS', 'system_jumps'),
+        logger=logger
+    )
+
+    logger.info('--parsing data into pandas')
+    system_jumps_df = pd.DataFrame(raw_data)
+
+    logger.debug(system_jumps_df.head(5))
+    return system_jumps_df
+
+def get_system_kills(
+        config,
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """fetches system kills information from ESI
+
+    Args:
+        config (:obj:`ProsperConfig`): config with [ENDPOINTS]
+        logger (:obj:`logging.logger`, optional): logging handle
+
+    Returns:
+        :obj:`pandas.DataFrame`: parsed data
+
+    """
+    logger.info('--fetching data from ESI')
+    raw_data = connections.get_esi(
+        config.get('ENDPOINTS', 'source'),
+        config.get('ENDPOINTS', 'system_kills'),
+        logger=logger
+    )
+
+    logger.info('--parsing data into pandas')
+    system_kills_df = pd.DataFrame(raw_data)
+
+    logger.debug(system_kills_df.head(5))
+    return system_kills_df
+
+
 class NavitronSystemStats(cli_core.NavitronApplication):
     """fetch and store /universe/system_kills/ & /universe/system_jumps
 
@@ -28,6 +83,31 @@ class NavitronSystemStats(cli_core.NavitronApplication):
 
         self.logger.info('HELLO WORLD')
 
+        self.logger.info('Fetching system info: Jumps')
+        system_jumps_df = get_system_jumps(
+            config=self.config,
+            logger=self.logger
+        )
+
+        self.logger.info('Fetching system info: Kills')
+        system_kills_df = get_system_kills(
+            config=self.config,
+            logger=self.logger
+        )
+
+        self.logger.info('Merging system info')
+        system_info_df = system_jumps_df.merge(
+            system_kills_df,
+            on='system_id'
+        )
+
+        self.logger.info('Appending Metadata')
+        system_info_df = cli_core.append_metadata(
+            system_info_df,
+            self.PROGNAME,
+            self.VERSION
+        )
+        self.logger.debug(system_info_df.head(5))
 
 def run_main():
     """hook for running entry_points"""
