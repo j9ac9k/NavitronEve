@@ -45,8 +45,20 @@ TODO: MORE INFO
 - Args
 - Cron recipe
 
+navitron_sde
+------------
+
+Fetches static data originally part of `EVE SDE`_.  Designed to periodically update local tables for static type<->info conversion.
+
+TODO: MORE INFO
+
+- Args
+- Cron recipe
+
+
 .. _Plumbum: http://plumbum.readthedocs.io/en/latest/cli.html
 .. _virtualenv: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 .. _MongoDB: https://www.mongodb.com/
 .. _connections:
 .. _EVE Online ESI: https://esi.tech.ccp.is/latest/
+.. _EVE SDE: https://www.fuzzwork.co.uk/dump/
