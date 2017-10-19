@@ -36,3 +36,27 @@ def setup_dirs():
 def load_config():
     """push config into project"""
     app_config.CONFIG = TEST_CONFIG
+
+def find_uniques(
+        test_list,
+        expected_list,
+        logger=LOGGER
+):
+    """checks for unique values between two lists.
+
+    Args:
+        test_list (:obj:`list`): values found in test
+        expected_list (:obj:`list`): values expected
+
+    Returns:
+        (:obj:`list`): unique_test
+        (:obj:`list`): unique_expected
+
+    """
+    unique_test = list(set(test_list) - set(expected_list))
+    logger.info('Unique test vals: {}'.format(unique_test))
+
+    unique_expected = list(set(expected_list) - set(test_list))
+    logger.info('Unique expected vals: {}'.format(unique_expected))
+
+    return unique_test, unique_expected
