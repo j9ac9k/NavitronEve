@@ -12,6 +12,8 @@ import navitron_crons.cli_core as cli_core
 
 HERE = path.abspath(path.dirname(__file__))
 
+__app_version__ = _version.__version__
+__app_name__ = 'navitron_system_stats'
 
 def get_system_jumps(
         config,
@@ -74,8 +76,8 @@ class NavitronSystemStats(cli_core.NavitronApplication):
     Feel free to add script-specific args/vars
 
     """
-    PROGNAME = 'navitron_system_stats'
-    VERSION = _version.__version__
+    PROGNAME = __app_name__
+    VERSION = __app_version__
 
     def main(self):
         """application runtime"""
@@ -93,7 +95,7 @@ class NavitronSystemStats(cli_core.NavitronApplication):
                 config=self.config,
                 logger=self.logger
             )
-        except Exception:
+        except Exception:  # pragma: no cover
             self.logger.error(
                 '%s: Unable to fetch system_jumps',
                 self.PROGNAME,
@@ -107,7 +109,7 @@ class NavitronSystemStats(cli_core.NavitronApplication):
                 config=self.config,
                 logger=self.logger
             )
-        except Exception:
+        except Exception:  # pramga: no cover
             self.logger.error(
                 '%s: Unable to fetch system_kills',
                 self.PROGNAME,
@@ -145,14 +147,14 @@ class NavitronSystemStats(cli_core.NavitronApplication):
                 exc_info=True
             )
             try:
-                connections.dump_to_db(
+                file_name = connections.dump_to_db(
                     system_info_df,
                     self.PROGNAME,
                     self.conn,
                     debug=True,
                     logger=self.logger
                 )
-            except Exception:
+            except Exception:  # pramga: no cover
                 self.logger.critical(
                     '%s: UNABLE TO SAVE DATA',
                     self.PROGNAME,
@@ -160,9 +162,9 @@ class NavitronSystemStats(cli_core.NavitronApplication):
                 )
                 raise
             self.logger.error(
-                '%s: saved data safely to disk %s',
+                '%s: saved data safely to disk: %s',
                 self.PROGNAME,
-                'TODO -- FILEPATH'
+                file_name
             )
 
         self.logger.info('%s: Complete -- Have a nice day', self.PROGNAME)

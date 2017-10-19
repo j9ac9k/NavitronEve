@@ -13,6 +13,7 @@ import navitron_crons.cli_core as cli_core
 DEFAULT_HEADER = {
     'User-Agent': 'Navitron-cron: https://github.com/j9ac9k/NavitronEve'
 }
+HERE = path.abspath(path.dirname(__file__))
 
 def get_esi(
         source_route,
@@ -48,19 +49,27 @@ def get_esi(
 
 def debug_dump(
         raw_data,
-        file_name
+        file_name,
+        dump_path=HERE
 ):
     """drop data to file rather than to mongodb
 
     Args:
         raw_data (:obj:`list`): JSON-serializable data
         file_name (str): dump filename (database_collection)
+        dump_path (str, optional)
+
+    Returns:
+        str: File name of dump
 
     """
     warnings.warn('Writing data to disk, not database', RuntimeWarning)
     file_name = '{}__{}.json'.format(file_name, datetime.utcnow().isoformat())
-    with open(file_name, 'w') as dump_fh:
+    file_path = path.join(dump_path, file_name)
+    with open(file_path, 'w') as dump_fh:
         json.dump(raw_data, dump_fh)
+
+    return file_path
 
 def dump_to_db(
         data_df,
@@ -85,12 +94,19 @@ def dump_to_db(
     raw_data = data_df.to_dict(orient='records')
     if debug:
         logger.warning('DEBUG MODE ENABLED: writing data to disk')
-        debug_dump(
-            raw_data,
-            '{}__{}'.format(conn.database, collection_name)
-        )
-        return
+        dump_path = ''
+        try:
+            dump_path = cli_core.CONFIG.get('GENERAL', 'dump_path')
+        except Exception:
+            pass
 
+        if not dump_path:
+            dump_path = HERE
+        return debug_dump(
+            raw_data,
+            '{}__{}'.format(conn.database, collection_name),
+            dump_path=dump_path
+        )
 
 
 CONNECTION_STR = 'mongodb://{username}:{{password}}@{hostname}:{port}/{database}'
