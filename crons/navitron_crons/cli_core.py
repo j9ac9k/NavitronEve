@@ -6,6 +6,7 @@ Acts as global namespace + parent-framework for CLI apps
 from os import path
 import platform
 from datetime import datetime
+import warnings
 
 from plumbum import cli
 import prosper.common.prosper_logging as p_logger
@@ -74,7 +75,7 @@ class NavitronApplication(cli.Application):
         help='Override default config with a local config')
     def override_config(self, config_path):
         """override config object with local version"""
-        pass
+        self.config = p_config.ProsperConfig(config_path)
 
     @cli.switch(
         ['--dump-config'],

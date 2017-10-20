@@ -91,6 +91,7 @@ def dump_to_db(
         None?
 
     """
+    logger.info('--pulling data out of Pandas')
     raw_data = data_df.to_dict(orient='records')
     if debug:
         logger.warning('DEBUG MODE ENABLED: writing data to disk')
@@ -107,6 +108,10 @@ def dump_to_db(
             '{}__{}'.format(conn.database, collection_name),
             dump_path=dump_path
         )
+
+    logger.info('--pushing data to mongodb')
+    with conn as db_conn:
+        db_conn[collection_name].insert_many(raw_data)
 
 
 CONNECTION_STR = 'mongodb://{username}:{{password}}@{hostname}:{port}/{database}?{args}'
@@ -171,14 +176,11 @@ class MongoConnection(object):
     def __bool__(self):
         return self.ready_to_query
 
-    def __enter__(self, collection=''):
+    def __enter__(self):
         """for `with obj()` logic -- open connection
 
-        Args:
-            collection (str, optional): collection to connect to (for shorter variables)
-
         Returns:
-            :obj:`pymongo.collections` or TBD
+            :obj:`pymongo.collections`
 
         """
         if not self.password or not bool(self):
@@ -190,10 +192,7 @@ class MongoConnection(object):
 
         self.mongo_conn = pymongo.MongoClient(mongo_address)
 
-        if collection:
-            return self.mongo_conn[self.database][collection]
-        else:
-            return self.mongo_conn[self.database]
+        return self.mongo_conn[self.database]
 
     def __exit__(self, exception_type, exception_value, traceback):
         """for `with obj()` logic -- close connection"""
