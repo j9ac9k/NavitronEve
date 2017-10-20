@@ -109,7 +109,7 @@ def dump_to_db(
         )
 
 
-CONNECTION_STR = 'mongodb://{username}:{{password}}@{hostname}:{port}/{database}'
+CONNECTION_STR = 'mongodb://{username}:{{password}}@{hostname}:{port}/{database}?{args}'
 class MongoConnection(object):
     """hacky session manager for pymongo con/curr
 
@@ -154,7 +154,8 @@ class MongoConnection(object):
             config.get('MONGO', 'password'),
             config.get('MONGO', 'hostname'),
             config.get('MONGO', 'port'),
-            config.get('MONGO', 'database')
+            config.get('MONGO', 'database'),
+            config.get('MONGO', 'args')
         ])
 
         self.password = config.get('MONGO', 'password')
@@ -163,7 +164,8 @@ class MongoConnection(object):
             username=config.get('MONGO', 'username'),
             hostname=config.get('MONGO', 'hostname'),
             port=config.get('MONGO', 'port'),
-            database=config.get('MONGO', 'database')
+            database=config.get('MONGO', 'database'),
+            args=config.get('MONGO', 'args')
         )
 
     def __bool__(self):
