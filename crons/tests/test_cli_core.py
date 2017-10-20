@@ -41,3 +41,22 @@ def test_append_metadata():
             'Unexpected values from append_metadata(): {}'.format(unique_values))
 
     # TODO: validate added cols
+
+python = local['python']
+APP_PATH = path.join(helpers.ROOT, 'cli_core.py')
+CONFIG_PATH = path.join(helpers.ROOT, 'navitron_crons.cfg')
+class TestCLICore:
+    """validate parent/meta plumbum cli wrapper"""
+    app_command = python[APP_PATH]
+
+    def test_config_dump(self):
+        """validate --dump-config arg"""
+        output = self.app_command('--dump-config')
+
+        with open(CONFIG_PATH, 'r') as cfg_fh:
+            raw_config = cfg_fh.read()
+
+        print(output)
+        print('----')
+        print(raw_config)
+        assert output == raw_config + '\n'

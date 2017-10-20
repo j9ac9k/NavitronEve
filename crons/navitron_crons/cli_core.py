@@ -81,6 +81,10 @@ class NavitronApplication(cli.Application):
         help='Dump global config, for easy custom setup')
     def dump_config(self):
         """dumps config file to stdout for piping into config file"""
+        with open(path.join(HERE, 'navitron_crons.cfg'), 'r') as cfg_fh:
+            base_config = cfg_fh.read()
+
+        print(base_config)
         exit()
 
     def load_logger(self, progname):
@@ -99,3 +103,6 @@ class NavitronApplication(cli.Application):
                 warnings.warn('Unable to config discord logger', RuntimeWarning)
 
         self.logger = log_builder.logger
+
+if __name__ == '__main__':
+    NavitronApplication.run()
