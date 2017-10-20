@@ -22,10 +22,20 @@ class TestMongoConnection:
         {'dummy_value': 'hello world'}
     ]
     test_collection = 'test_dummy'
+    test_database = helpers.TEST_CONFIG.get('MONGO', 'database')
     def test_mongo_connection_contents(self):
         """validate test_conn has stuff inside"""
-        pass
+        assert bool(self.test_conn)
+        assert self.test_conn.database == self.test_database
 
     def test_mongo_connection_query(self):
         """try to get dummy data out of test database"""
-        pass
+        with self.test_conn as conn:
+            data = list(conn[self.test_collection].find(
+                {}, projection={'_id': False}))
+            # Raises if connection is bad
+
+        if not data == self.expected_data:
+            print('expected_data={}'.format(self.expected_data))
+            print('recieved_data={}'.format(data))
+            pytest.xfail('Database not initialized?')

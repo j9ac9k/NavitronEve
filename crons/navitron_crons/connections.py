@@ -190,7 +190,7 @@ class MongoConnection(object):
 
         self.mongo_conn = pymongo.MongoClient(mongo_address)
 
-        if colletion:
+        if collection:
             return self.mongo_conn[self.database][collection]
         else:
             return self.mongo_conn[self.database]
