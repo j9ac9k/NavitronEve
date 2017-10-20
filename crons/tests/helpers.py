@@ -13,7 +13,8 @@ ROOT = path.abspath(path.join(path.dirname(HERE), 'navitron_crons'))
 DUMP_FOLDER = path.join(HERE, '_dumps')
 LOGGER = p_logging.DEFAULT_LOGGER
 
-TEST_CONFIG = p_config.ProsperConfig(path.join(ROOT, 'navitron_crons.cfg'))
+ROOT_CONFIG = p_config.ProsperConfig(path.join(ROOT, 'navitron_crons.cfg'))
+TEST_CONFIG = p_config.ProsperConfig(path.join(HERE, 'navitron_test.cfg'))
 
 def build_logger():
     """sets up logger for test stuff"""
@@ -35,7 +36,7 @@ def setup_dirs():
 
 def load_config():
     """push config into project"""
-    app_config.CONFIG = TEST_CONFIG
+    app_config.CONFIG = ROOT_CONFIG
 
 def find_uniques(
         test_list,
