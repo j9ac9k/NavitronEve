@@ -49,14 +49,11 @@ class TestCLICore:
     """validate parent/meta plumbum cli wrapper"""
     app_command = python[APP_PATH]
 
-    def test_config_dump(self):
+    def test_dump_config(self):
         """validate --dump-config arg"""
         output = self.app_command('--dump-config')
 
         with open(CONFIG_PATH, 'r') as cfg_fh:
             raw_config = cfg_fh.read()
 
-        print(output)
-        print('----')
-        print(raw_config)
         assert output == raw_config + '\n'
