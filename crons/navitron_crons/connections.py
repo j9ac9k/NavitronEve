@@ -3,6 +3,7 @@ from os import path
 from datetime import datetime
 import warnings
 import json  # TODO: ujson?
+import uuid
 
 import requests
 import pymongo
@@ -70,6 +71,36 @@ def debug_dump(
         json.dump(raw_data, dump_fh)
 
     return file_path
+
+PROVENANCE_COLLECTION='provenance_recipts'
+def write_provenance(
+        metadata_obj,
+        conn,
+        provenance_collection=PROVENANCE_COLLECTION,
+        debug=False,
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """write recipts to db with source information.
+
+    Notes:
+        since most writes are bulk-writes, single meta tag->multiple documents
+
+    Args:
+        metadata_obj (:obj:`dict`): metadata to write to provenance db
+        conn (:obj:`MongoConnection`): database handle to write with
+        provenance_collection (str, optional): name of collection to store to
+        debug (bool, optional): actually write to db?
+        logger (:obj:`logging.logger`, optional): logging handle
+
+    """
+    if debug:
+        logger.warning('DEBUG MODE ENABLED: writing data to disk')
+        warnings.warn('Not writing provenance data', RuntimeWarning)
+        return
+
+    logger.info('--passing data to Mongo')
+    with conn as db_conn:
+        db_conn[provenance_collection].insert(metadata_obj)
 
 def dump_to_db(
         data_df,

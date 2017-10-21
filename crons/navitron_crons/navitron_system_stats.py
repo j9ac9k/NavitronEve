@@ -124,7 +124,7 @@ class NavitronSystemStats(cli_core.NavitronApplication):
         )
 
         self.logger.info('Appending Metadata')
-        system_info_df = cli_core.append_metadata(
+        system_info_df, metadata_obj = cli_core.append_metadata(
             system_info_df,
             self.PROGNAME,
             self.VERSION
@@ -136,6 +136,12 @@ class NavitronSystemStats(cli_core.NavitronApplication):
             connections.dump_to_db(
                 system_info_df,
                 self.PROGNAME,
+                self.conn,
+                debug=self.debug,
+                logger=self.logger
+            )
+            connections.write_provenance(
+                metadata_obj,
                 self.conn,
                 debug=self.debug,
                 logger=self.logger

@@ -33,10 +33,13 @@ def append_metadata(
 
     Returns:
         :obj:`pandas.DataFrame`: updated data ready to export
+        :obj:`dict`: specific metadata
 
     """
     now = datetime.utcnow()
+    write_recipt = str(uuid.uuid1())
     metadata_obj = {
+        'write_recipt': write_recipt
         'data_source': source_name,
         'machine_source': platform.node(),
         'version': source_version,
@@ -45,9 +48,9 @@ def append_metadata(
     }
 
     data_df['cron_datetime'] = now.isoformat()
-    data_df['metadata'] = [metadata_obj] * data_df.shape[0]  # need to copy metadata onto every row
+    data_df['write_recipt'] = write_recipt
 
-    return data_df
+    return data_df, metadata_obj
 
 class NavitronApplication(cli.Application):
     """parent metaclass for CLI applications
