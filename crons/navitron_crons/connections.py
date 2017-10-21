@@ -3,7 +3,6 @@ from os import path
 from datetime import datetime
 import warnings
 import json  # TODO: ujson?
-import uuid
 
 import requests
 import pymongo

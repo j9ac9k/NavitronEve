@@ -7,6 +7,7 @@ from os import path
 import platform
 from datetime import datetime
 import warnings
+import uuid
 
 from plumbum import cli
 import prosper.common.prosper_logging as p_logger
@@ -39,7 +40,7 @@ def append_metadata(
     now = datetime.utcnow()
     write_recipt = str(uuid.uuid1())
     metadata_obj = {
-        'write_recipt': write_recipt
+        'write_recipt': write_recipt,
         'data_source': source_name,
         'machine_source': platform.node(),
         'version': source_version,
