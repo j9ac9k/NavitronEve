@@ -20,20 +20,17 @@ DEFAULT_LOGGER = p_logger.DEFAULT_LOGGER
 HERE = path.abspath(path.dirname(__file__))
 CONFIG = p_config.ProsperConfig(path.join(HERE, 'navitron_crons.cfg'))
 
-def append_metadata(
-        data_df,
+def generate_metadata(
         source_name,
         source_version
 ):
     """if you're gonna use noSQL, you gotta have provenance!  Adds reliable metadata to records
 
     Args:
-        data_df (:obj:`pandas.DataFrame`): raw data to be saved
         source_name (str): name of source script
         source_version (str): semantic version of source script
 
     Returns:
-        :obj:`pandas.DataFrame`: updated data ready to export
         :obj:`dict`: specific metadata
 
     """
@@ -48,10 +45,7 @@ def append_metadata(
         'cron_datetime': now.isoformat()
     }
 
-    data_df['cron_datetime'] = now.isoformat()
-    data_df['write_recipt'] = write_recipt
-
-    return data_df, metadata_obj
+    return metadata_obj
 
 class NavitronApplication(cli.Application):
     """parent metaclass for CLI applications

@@ -111,7 +111,7 @@ def dump_to_db(
     """push data to mongodb
 
     Args:
-        data_df (:obj:`pandas.DataFrame`): data to write to db
+        data_df (:obj:`pandas.DataFrame` or :obj:`dict`): data to write to db
         collection_name (str): table to write data to
         conn (:obj:`MongoConnection`): database handle to write with
         debug (bool, optional): actually write to db?  Or dump to file
@@ -121,8 +121,12 @@ def dump_to_db(
         None?
 
     """
-    logger.info('--pulling data out of Pandas')
-    raw_data = data_df.to_dict(orient='records')
+    if not isinstance(data_df, (dict, list)):
+        logger.info('--pulling data out of Pandas->list')
+        raw_data = data_df.to_dict(orient='records')
+    else:
+        raw_data = data_df
+
     if debug:
         logger.warning('DEBUG MODE ENABLED: writing data to disk')
         dump_path = ''

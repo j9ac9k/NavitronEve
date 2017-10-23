@@ -1,4 +1,4 @@
-"""navitron_system_kills.py: cronjob for snapshotting /universe/system_kills/"""
+"""navitron_system_kills.py: cronjob for snapshotting /status/"""
 from os import path
 from datetime import datetime
 import warnings
@@ -13,9 +13,9 @@ import navitron_crons.cli_core as cli_core
 HERE = path.abspath(path.dirname(__file__))
 
 __app_version__ = _version.__version__
-__app_name__ = 'navitron_system_stats'
+__app_name__ = 'navitron_server_status'
 
-def get_system_jumps(
+def get_server_status(
         config,
         logger=cli_core.DEFAULT_LOGGER
 ):
@@ -32,45 +32,14 @@ def get_system_jumps(
     logger.info('--fetching data from ESI')
     raw_data = connections.get_esi(
         config.get('ENDPOINTS', 'source'),
-        config.get('ENDPOINTS', 'system_jumps'),
+        config.get('ENDPOINTS', 'server_status'),
         logger=logger
     )
 
-    logger.info('--parsing data into pandas')
-    system_jumps_df = pd.DataFrame(raw_data)
-
-    logger.debug(system_jumps_df.head(5))
-    return system_jumps_df
-
-def get_system_kills(
-        config,
-        logger=cli_core.DEFAULT_LOGGER
-):
-    """fetches system kills information from ESI
-
-    Args:
-        config (:obj:`ProsperConfig`): config with [ENDPOINTS]
-        logger (:obj:`logging.logger`, optional): logging handle
-
-    Returns:
-        :obj:`pandas.DataFrame`: parsed data
-
-    """
-    logger.info('--fetching data from ESI')
-    raw_data = connections.get_esi(
-        config.get('ENDPOINTS', 'source'),
-        config.get('ENDPOINTS', 'system_kills'),
-        logger=logger
-    )
-
-    logger.info('--parsing data into pandas')
-    system_kills_df = pd.DataFrame(raw_data)
-
-    logger.debug(system_kills_df.head(5))
-    return system_kills_df
+    return raw_data
 
 
-class NavitronSystemStats(cli_core.NavitronApplication):
+class NavitronServerStatus(cli_core.NavitronApplication):
     """fetch and store /universe/system_kills/ & /universe/system_jumps
 
     Feel free to add script-specific args/vars
@@ -89,53 +58,35 @@ class NavitronSystemStats(cli_core.NavitronApplication):
 
         self.logger.info('HELLO WORLD')
 
-        self.logger.info('Fetching system info: Jumps')
+        self.logger.info('Fetching server status')
         try:
-            system_jumps_df = get_system_jumps(
-                config=self.config,
+            server_status = get_server_status(
+                self.config,
                 logger=self.logger
             )
-        except Exception:  # pragma: no cover
+        except Exception:
             self.logger.error(
-                '%s: Unable to fetch system_jumps',
+                '%s: Unable to fetch server_info',
                 self.PROGNAME,
                 exc_info=True
             )
             raise
 
-        self.logger.info('Fetching system info: Kills')
-        try:
-            system_kills_df = get_system_kills(
-                config=self.config,
-                logger=self.logger
-            )
-        except Exception:  # pramga: no cover
-            self.logger.error(
-                '%s: Unable to fetch system_kills',
-                self.PROGNAME,
-                exc_info=True
-            )
-            raise
-
-        self.logger.info('Merging system info')
-        system_info_df = system_jumps_df.merge(
-            system_kills_df,
-            on='system_id'
-        )
-
-        self.logger.info('Appending Metadata')
+        self.logger.info('Appending metadata')
         metadata_obj = cli_core.generate_metadata(
             self.PROGNAME,
             self.VERSION
         )
-        system_info_df['cron_datetime'] = metadata_obj['cron_datetime']
-        system_info_df['write_recipt'] = metadata_obj['write_recipt']
-        self.logger.debug(system_info_df.head(5))
+
+        server_status['cron_datetime'] = metadata_obj['cron_datetime']
+        server_status['write_recipt'] = metadata_obj['write_recipt']
+
+        self.logger.debug(server_status)
 
         self.logger.info('Pushing data to database')
         try:
             connections.dump_to_db(
-                system_info_df,
+                [server_status],
                 self.PROGNAME,
                 self.conn,
                 debug=self.debug,
@@ -147,7 +98,7 @@ class NavitronSystemStats(cli_core.NavitronApplication):
                 debug=self.debug,
                 logger=self.logger
             )
-        except Exception:
+        except:
             self.logger.error(
                 '%s: Unable to write data to database -- Attempting to write to disk',
                 self.PROGNAME,
@@ -155,7 +106,7 @@ class NavitronSystemStats(cli_core.NavitronApplication):
             )
             try:
                 file_name = connections.dump_to_db(
-                    system_info_df,
+                    [server_status],
                     self.PROGNAME,
                     self.conn,
                     debug=True,
@@ -178,7 +129,7 @@ class NavitronSystemStats(cli_core.NavitronApplication):
 
 def run_main():
     """hook for running entry_points"""
-    NavitronSystemStats.run()
+    NavitronServerStatus.run()
 
 if __name__ == '__main__':
     run_main()

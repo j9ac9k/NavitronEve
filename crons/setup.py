@@ -94,6 +94,7 @@ setup(
         'console_scripts': [
             'navitron_system_stats=navitron_crons.navitron_system_stats:run_main',
             'navitron_sde=navitron_crons.navitron_sde:run_main',
+            'navitron_server_status=navitron_crons.navitron_server_status:run_main'
         ]
     },
     install_requires=[
