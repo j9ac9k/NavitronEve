@@ -11,3 +11,6 @@ class ConnectionException(NavitronCronException):
 class MissingMongoConnectionInfo(ConnectionException):
     """Unable to connect to mongo, missing connection info"""
     pass
+class NoSDEDataFound(ConnectionException):
+    """Blank collection found where SDE was expected"""
+    pass

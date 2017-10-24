@@ -69,7 +69,7 @@ def fetch_current_sde(
         logger (:obj:`logging.logger`, optional): logging handle
 
     Returns:
-        :obj:`pandas.DataFrame` or `NoneType`
+        :obj:`pandas.DataFrame`
 
     """
     logger.info('--fetching existing SDE data: %s', collection_name)
@@ -81,7 +81,7 @@ def fetch_current_sde(
 
     if not raw_data:
         logger.warning('NO SDE DATA FOUND IN %s', collection_name)
-        return None
+        raise exceptions.NoSDEDataFound
 
     logger.info('--pushing data into Pandas')
     data_df = pd.DataFrame(raw_data)
@@ -89,6 +89,18 @@ def fetch_current_sde(
     logger.debug(data_df.head(5))
 
     return data_df
+
+def clear_collection(
+        collection_name,
+        conn,
+        query={},
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """removes invalid documents from collection
+
+    TODO
+    """
+    pass
 
 def debug_dump(
         raw_data,
