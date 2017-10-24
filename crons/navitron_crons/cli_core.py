@@ -47,6 +47,24 @@ def generate_metadata(
 
     return metadata_obj
 
+def update_which_sde_data(
+        current_sde_df,
+        latest_esi_df,
+        index_key
+):
+    """validate if current table needs an update
+
+    Args:
+        current_sde_df (:obj:`pandas.DataFrame`): current data (from mongodb)
+        latest_esi_df (:obj:`pandas.DataFrame`): latest data from REST/ESI
+        index_key (str): name of column to match on
+
+    Returns:
+        (:obj:`list`): list of keys that need to be updated
+
+    """
+    pass
+
 class NavitronApplication(cli.Application):
     """parent metaclass for CLI applications
 
