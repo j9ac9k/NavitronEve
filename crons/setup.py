@@ -101,6 +101,7 @@ setup(
         'prospercommon~=1.1.1',
         'plumbum~=1.6.3',
         'requests>=2.18.4,<3',
+        'requests-futures~=0.9.7',
         'esipy~=0.1.8',
         'pandas~=0.20.3',
         'pymongo~=3.5.1'
@@ -113,7 +114,8 @@ setup(
     extras_require={
         'dev':[
             'sphinx',
-            'sphinxcontrib-napoleon'
+            'sphinxcontrib-napoleon',
+            'contexttimer'
         ]
     },
     cmdclass={

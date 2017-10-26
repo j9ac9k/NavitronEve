@@ -26,7 +26,7 @@ def get_server_status(
         logger (:obj:`logging.logger`, optional): logging handle
 
     Returns:
-        :obj:`pandas.DataFrame`: parsed data
+        :obj:`dict`: raw data from ESI
 
     """
     logger.info('--fetching data from ESI')

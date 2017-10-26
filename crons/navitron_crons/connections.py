@@ -15,9 +15,11 @@ DEFAULT_HEADER = {
 }
 HERE = path.abspath(path.dirname(__file__))
 
+
 def get_esi(
         source_route,
         endpoint_route,
+        special_id=None,
         params=None,
         headers=DEFAULT_HEADER,
         logger=cli_core.DEFAULT_LOGGER
@@ -27,6 +29,7 @@ def get_esi(
     Args:
         source_route (str): URI for ESI connection
         endpoint_route (str): endpoint information for ESI resource
+        special_id (int, optional): get more information from standard endpoints
         params (:obj:`dict`, optional): params for REST request
         header (:obj:`dict`, optional): header information for request
         logger (:obj:`logging.logger`, optional): logging handler
@@ -39,6 +42,11 @@ def get_esi(
         source_route=source_route,
         endpoint_route=endpoint_route
     )
+    if special_id:
+        address = '{address}{special_id}/'.format(
+            address=address,
+            special_id=special_id
+        )
     logger.info('--fetching URL: %s', address)
 
     req = requests.get(address, params=params, headers=headers)
@@ -100,7 +108,13 @@ def clear_collection(
 
     TODO
     """
-    pass
+    logger.info('--deleting data from: %s', collection_name)
+    logger.info(query)
+
+    with conn as db_conn:
+        result = db_conn[collection_name].delete_many(query)
+
+    logger.info('--deleted records: %d', result.deleted_count)
 
 def debug_dump(
         raw_data,
