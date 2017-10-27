@@ -24,6 +24,29 @@ def get_esi(
         headers=DEFAULT_HEADER,
         logger=cli_core.DEFAULT_LOGGER
 ):
+    """overload wrapper for get_esi_address()
+
+    Note:
+        avoids garbage returns and breaking issues
+
+    """
+    return get_esi_address(
+        source_route,
+        endpoint_route,
+        special_id=special_id,
+        params=params,
+        headers=headers,
+        logger=logger
+    )[0]
+
+def get_esi_address(
+        source_route,
+        endpoint_route,
+        special_id=None,
+        params=None,
+        headers=DEFAULT_HEADER,
+        logger=cli_core.DEFAULT_LOGGER
+):
     """request wrapper for fetching ESI data
 
     Args:
@@ -36,6 +59,7 @@ def get_esi(
 
     Returns:
         :obj:`list` JSON return from endpoint
+        str: address queried
 
     """
     address = '{source_route}{endpoint_route}'.format(
@@ -53,7 +77,7 @@ def get_esi(
     req.raise_for_status()
     data = req.json()
 
-    return data
+    return data, address
 
 DATA_PROJECTION = {
     '_id': False,

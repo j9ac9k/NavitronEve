@@ -7,7 +7,9 @@ class NavitronCronException(Exception):
 class ConnectionException(NavitronCronException):
     """base exception for connections issues"""
     pass
-
+class FatalCLIExit(NavitronCronException):
+    """general exception for fatal issue"""
+    pass
 class MissingMongoConnectionInfo(ConnectionException):
     """Unable to connect to mongo, missing connection info"""
     pass

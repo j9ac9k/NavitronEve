@@ -104,7 +104,8 @@ setup(
         'requests-futures~=0.9.7',
         'esipy~=0.1.8',
         'pandas~=0.20.3',
-        'pymongo~=3.5.1'
+        'pymongo~=3.5.1',
+        'contexttimer~=0.3.3'
 
     ],
     tests_require=[
@@ -115,7 +116,6 @@ setup(
         'dev':[
             'sphinx',
             'sphinxcontrib-napoleon',
-            'contexttimer'
         ]
     },
     cmdclass={

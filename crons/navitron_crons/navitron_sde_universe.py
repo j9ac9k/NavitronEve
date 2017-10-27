@@ -7,6 +7,7 @@ from enum import Enum
 
 import pandas as pd
 from plumbum import cli
+from contexttimer import Timer
 
 import navitron_crons.exceptions as exceptions
 import navitron_crons.connections as connections
@@ -28,106 +29,189 @@ class UniverseEndpoint(Enum):
     stargates = 'stargates'
 
 
-def get_universe_systems(
+def get_universe_systems_details(
         config,
-        system_id=None,
+        retry=1,
+        workers=20,
         logger=cli_core.DEFAULT_LOGGER
 ):
     """fetch universe/systems/ information
 
     Args:
         config (:obj:`ProsperConfig`): config with [ENDPOINTS]
-        system_id (int, optional): systemID for specific information lookup
+        retry (int, optional): number of retries allowed
+        workers (int, optional): number of async workers allowed
         logger (:obj:`loging.logger`, optional): logging handle
 
     Returns:
-        :obj:`list` or :obj:`dict`: raw results from universe/systems/
+        :obj:`list`: details for all systems in /universe/systems endpoint
+
+    Raises:
+        :obj:`exceptions.FatalCLIExit`: message admins, unable to resolve required data
 
     """
-    logger.info('--fetching system data from ESI')
-    if system_id:
-        logger.info('--fetching details for %d', int(system_id))  # WARN: could throw TypeError
-    raw_data = connections.get_esi(
-        config.get('ENDPOINTS', 'source'),
-        config.get('ENDPOINTS', 'systems'),
-        special_id=system_id
-    )
-    return raw_data
+    logger.info('--fetching system list from ESI')
+    try:
+        system_list, address = connections.get_esi_address(
+            config.get('ENDPOINTS', 'source'),
+            config.get('ENDPOINTS', 'systems'),
+        )
+    except Exception as err:
+        logger.error('Unable to fetch bulk system list from ESI', exc_info=True)
+        raise exceptions.FatalCLIExit(repr(err))
+    logger.debug(len(system_list))
 
-def get_universe_constellations(
+    logger.info('--fetching system details from ESI')
+    try:
+        system_info = cli_core.fetch_bulk_data_async(
+            address,
+            system_list,
+            retry=retry,
+            workers=workers,
+            logger=logger
+        )
+    except Exception as err:
+        logger.error('Unable to fetch system details from ESI', exc_info=True)
+        raise exceptions.FatalCLIExit(repr(err))
+
+    return system_info
+
+def get_universe_constellations_details(
         config,
-        constellation_id=None,
+        retry=1,
+        workers=20,
         logger=cli_core.DEFAULT_LOGGER
 ):
     """fetch universe/constellations/ information
 
     Args:
         config (:obj:`ProsperConfig`): config with [ENDPOINTS]
-        constellation_id (int, optional): constellationID for specific information lookup
+        retry (int, optional): number of retries allowed
+        workers (int, optional): number of async workers allowed
         logger (:obj:`loging.logger`, optional): logging handle
 
     Returns:
-        :obj:`list` or :obj:`dict`: raw results from universe/constellations/
+        :obj:`list`: details for all constellations in /universe/constellations endpoint
+
+    Raises:
+        :obj:`exceptions.FatalCLIExit`: message admins, unable to resolve required data
 
     """
-    logger.info('--fetching constellation data from ESI')
-    if constellation_id:
-        logger.info('--fetching details for %d', int(constellation_id))  # WARN: could throw TypeError
-    raw_data = connections.get_esi(
-        config.get('ENDPOINTS', 'source'),
-        config.get('ENDPOINTS', 'constellations'),
-        special_id=constellation_id
-    )
-    return raw_data
+    logger.info('--fetching constellation list from ESI')
+    try:
+        constellation_list, address = connections.get_esi_address(
+            config.get('ENDPOINTS', 'source'),
+            config.get('ENDPOINTS', 'constellations')
+        )
+    except Exception as err:
+        logger.error('Unable to fetch bulk constellations list from ESI', exc_info=True)
+        raise exceptions.FatalCLIExit(repr(err))
+    logger.debug(len(constellation_list))
 
-def get_universe_regions(
+    logger.info('--fetching constellation details from ESI')
+    try:
+        constellation_info = cli_core.fetch_bulk_data_async(
+            address,
+            constellation_list,
+            retry=retry,
+            workers=workers,
+            logger=logger
+        )
+    except Exception as err:
+        logger.error('Unable to fetch constellations details from ESI', exc_info=True)
+        raise exceptions.FatalCLIExit(repr(err))
+
+    return constellation_info
+
+def get_universe_regions_details(
         config,
-        region_id=None,
+        retry=1,
+        workers=20,
         logger=cli_core.DEFAULT_LOGGER
 ):
     """fetch universe/constellations/ information
 
     Args:
         config (:obj:`ProsperConfig`): config with [ENDPOINTS]
-        region_id (int, optional): regionID for specific information lookup
+        retry (int, optional): number of retries allowed
+        workers (int, optional): number of async workers allowed
         logger (:obj:`loging.logger`, optional): logging handle
 
     Returns:
-        :obj:`list` or :obj:`dict`: raw results from universe/regions/
+        :obj:`list`: details for all regions in /universe/regions endpoint
+
+    Raises:
+        :obj:`exceptions.FatalCLIExit`: message admins, unable to resolve required data
 
     """
     logger.info('--fetching region data from ESI')
-    if region_id:
-        logger.info('--fetching details for %d', int(region_id))  # WARN: could throw TypeError
-    raw_data = connections.get_esi(
-        config.get('ENDPOINTS', 'source'),
-        config.get('ENDPOINTS', 'regions'),
-        special_id=region_id
-    )
-    return raw_data
+    try:
+        region_list, address = connections.get_esi_address(
+            config.get('ENDPOINTS', 'source'),
+            config.get('ENDPOINTS', 'regions')
+        )
+    except Exception as err:
+        logger.error('Unable to fetch bulk regions list from ESI', exc_info=True)
+        raise exceptions.FatalCLIExit(repr(err))
+    logger.debug(len(region_list))
 
-#def get_universe_stargates(
-#        config,
-#        stargate_id,
-#        logger=cli_core.DEFAULT_LOGGER
-#):
-#    """fetch universe/constellations/ information
-#
-#    Args:
-#        config (:obj:`ProsperConfig`): config with [ENDPOINTS]
-#        stargate_id (int): stargateID for specific information lookup
-#        logger (:obj:`loging.logger`, optional): logging handle
-#
-#    Returns:
-#        :obj:`dict`: raw results from universe/stargates/
-#
-#    """
-#    logger.info('--fetching stargate data from ESI: %d', int(stargate_id))
-#    raw_data = connections.get_esi(
-#        config.get('ENDPOINTS', 'source'),
-#        config.get('ENDPOINTS', 'stargates').format(stargate_id=stargate_id)
-#    )
-#    return raw_data
+    logger.info('--fetching region details from ESI')
+    try:
+        region_info = cli_core.fetch_bulk_data_async(
+            address,
+            region_list,
+            retry=retry,
+            workers=workers,
+            logger=logger
+        )
+    except Exception as err:
+        logger.error('Unable to fetch regions details from ESI', exc_info=True)
+        raise exceptions.FatalCLIExit(repr(err))
+
+    return region_info
+
+
+def get_universe_stargates_details(
+        config,
+        stargate_list,
+        retry=1,
+        workers=20,
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """find details on all stargates in systems list
+
+    Args:
+        config (:obj:`ProsperConfig`): config with [ENDPOINTS]
+        system_details_list (:obj:`list`): list of unique stargates
+        retry (int, optional): number of retries allowed
+        workers (int, optional): number of async workers allowed
+        logger (:obj:`loging.logger`, optional): logging handle
+
+    Returns:
+        :obj:`list`: details for all stargates in /universe/stargates endpoint
+
+    Raises:
+        :obj:`exceptions.FatalCLIExit`: message admins, unable to resolve required data
+
+    """
+    base_url = '{base_url}{endpoint}'.format(
+        base_url=config.get('ENDPOINTS', 'source'),
+        endpoint=config.get('ENDPOINTS', 'stargates')
+    )
+    logger.info('--fetching stargate details from ESI')
+    try:
+        stargate_info = cli_core.fetch_bulk_data_async(
+            base_url,
+            stargate_list,
+            retry=1,
+            workers=40,  # lots of stargates, more workers plz
+            logger=logger
+        )
+    except Exception as err:
+        logger.error('Unable to fetch stargate details from ESI', exc_info=True)
+        raise exceptions.FatalCLIExit(repr(err))
+
+    return stargate_info
 
 def parse_stargates_from_systems(
         system_details_list,
@@ -159,13 +243,13 @@ def parse_stargates_from_systems(
         stargates = system_info['stargates']
         stargates_full_list.extend(stargates)
 
-    if skip_list:
-        logger.warning('Systems found without stargates: %s', str(skip_list))
+    #if skip_list:
+    #    logger.warning('Systems found without stargates: %s', str(skip_list))
 
     logger.info('--parsing down to unique list')
     stargates_list = list(set(stargates_full_list))
 
-    logger.debug(stargates_list)
+    logger.debug(len(stargates_list))
     return stargates_list
 
 
@@ -215,96 +299,61 @@ class NavitronSDEUniverse(cli_core.NavitronApplication):
             logger=self.logger  # note: order specific, logger may not be loaded yet
         )
 
-        self.logger.info('HELLO WORLD')
+        ## Fetch raw data from ESI ##
         if self.all_data or self.systems or self.stargates:
             self.logger.info('Fetching system information')
-            try:
-                system_list = get_universe_systems(
+            with Timer() as system_info_timer:
+                system_info = get_universe_systems_details(
                     config=self.config,
                     logger=self.logger
                 )
-                base_url = '{base_url}{endpoint}'.format(
-                    base_url=self.config.get('ENDPOINTS', 'source'),
-                    endpoint=self.config.get('ENDPOINTS', 'systems')
-                )
-                system_info = cli_core.fetch_bulk_data_async(
-                    base_url,
-                    system_list,
-                    retry=1,
-                    logger=self.logger
-                )
-            except Exception:
-                self.logger.error('Unable to process system details', exc_info=True)
-                raise
-            self.logger.debug(system_info[0])
+                self.logger.info('TIMER: system_info_timer -- %s', system_info_timer)
+                self.logger.debug(system_info[0])
+
 
         if self.all_data or self.constellations:
             self.logger.info('Fetching constellation information')
-            try:
-                constellation_list = get_universe_constellations(
+            with Timer() as constellation_info_timer:
+                constellation_info = get_universe_constellations_details(
                     config=self.config,
                     logger=self.logger
                 )
-                base_url = '{base_url}{endpoint}'.format(
-                    base_url=self.config.get('ENDPOINTS', 'source'),
-                    endpoint=self.config.get('ENDPOINTS', 'constellations')
-                )
-                constellation_info = cli_core.fetch_bulk_data_async(
-                    base_url,
-                    constellation_list,
-                    retry=1,
-                    logger=self.logger
-                )
-            except Exception:
-                self.logger.error('Unable to process constellation details', exc_info=True)
-                raise
-            self.logger.debug(constellation_info[0])
+                self.logger.info('TIMER: constellation_info_timer -- %s', constellation_info_timer)
+                self.logger.debug(constellation_info[0])
+
 
         if self.all_data or self.regions:
             self.logger.info('Fetching region information')
-            try:
-                region_list = get_universe_regions(
+            with Timer() as region_info_timer:
+                region_info = get_universe_regions_details(
                     config=self.config,
                     logger=self.logger
                 )
-                base_url = '{base_url}{endpoint}'.format(
-                    base_url=self.config.get('ENDPOINTS', 'source'),
-                    endpoint=self.config.get('ENDPOINTS', 'regions')
-                )
-                region_info = cli_core.fetch_bulk_data_async(
-                    base_url,
-                    region_list,
-                    retry=1,
-                    logger=self.logger
-                )
-            except Exception:
-                self.logger.error('Unable to process region details', exc_info=True)
-                raise
-            self.logger.debug(region_info[0])
+                self.logger.info('TIMER: region_info_timer -- %s', region_info_timer)
+                self.logger.debug(region_info[0])
+
 
         if self.all_data or self.stargates:
             self.logger.info('Fetching stargate information')
-            stargate_list = parse_stargates_from_systems(
-                system_info,
-                logger=self.logger
-            )
-            try:
-                base_url = '{base_url}{endpoint}'.format(
-                    base_url=self.config.get('ENDPOINTS', 'source'),
-                    endpoint=self.config.get('ENDPOINTS', 'stargates')
-                )
-                stargate_info = cli_core.fetch_bulk_data_async(
-                    base_url,
-                    stargate_list,
-                    retry=1,
-                    workers=40,  # lots of stargates, more workers plz
+            with Timer() as parse_stargates_timer:
+                stargate_list = parse_stargates_from_systems(
+                    system_info,
                     logger=self.logger
                 )
-            except Exception:
-                self.logger.error('Unable to process stargate details', exc_info=True)
-                raise
-            self.logger.debug(stargate_info[0])
+                self.logger.info('TIMER: parse_stargates_timer -- %s', parse_stargates_timer)
 
+            with Timer() as stargate_info_timer:
+                stargate_info = get_universe_stargates_details(
+                    self.config,
+                    stargate_list,
+                    workers=40,
+                    logger=self.logger
+                )
+                self.logger.info('TIMER: stargate_info_timer -- %s', stargate_info_timer)
+                self.logger.debug(stargate_info[0])
+
+
+        ## Process data into Mongo-ready shape ##
         self.logger.info('Combining data in Pandas')
         # TODO
 
