@@ -1,0 +1,212 @@
+[
+    {
+        "stargate_id": 50001248,
+        "name": "Stargate (Maurasi)",
+        "type_id": 16,
+        "position": {
+            "x": -4067658424320,
+            "y": -710585180160,
+            "z": -3956625039360
+        },
+        "system_id": 30000142,
+        "destination": {
+            "system_id": 30000140,
+            "stargate_id": 50000802
+        }
+    },
+    {
+        "stargate_id": 50001249,
+        "name": "Stargate (Perimeter)",
+        "type_id": 16,
+        "position": {
+            "x": -4067676856320,
+            "y": -710577070080,
+            "z": -3956622581760
+        },
+        "system_id": 30000142,
+        "destination": {
+            "system_id": 30000144,
+            "stargate_id": 50002185
+        }
+    },
+    {
+        "stargate_id": 50001250,
+        "name": "Stargate (New Caldari)",
+        "type_id": 16,
+        "position": {
+            "x": -4067676119040,
+            "y": -710568468480,
+            "z": -3956615454720
+        },
+        "system_id": 30000142,
+        "destination": {
+            "system_id": 30000145,
+            "stargate_id": 50002198
+        }
+    },
+    {
+        "stargate_id": 50013876,
+        "name": "Stargate (Sobaseki)",
+        "type_id": 29629,
+        "position": {
+            "x": -3487431106560,
+            "y": 4569656647680,
+            "z": 2555351900160
+        },
+        "system_id": 30000142,
+        "destination": {
+            "system_id": 30001363,
+            "stargate_id": 50013875
+        }
+    },
+    {
+        "stargate_id": 50013913,
+        "name": "Stargate (Muvolailen)",
+        "type_id": 29629,
+        "position": {
+            "x": 265806766080,
+            "y": 6079769763840,
+            "z": 1593583411200
+        },
+        "system_id": 30000142,
+        "destination": {
+            "system_id": 30002780,
+            "stargate_id": 50013914
+        }
+    },
+    {
+        "stargate_id": 50013921,
+        "name": "Stargate (Niyabainen)",
+        "type_id": 16,
+        "position": {
+            "x": -4067679068160,
+            "y": -710575104000,
+            "z": -3956620124160
+        },
+        "system_id": 30000142,
+        "destination": {
+            "system_id": 30000143,
+            "stargate_id": 50013922
+        }
+    },
+    {
+        "stargate_id": 50013928,
+        "name": "Stargate (Ikuchi)",
+        "type_id": 29627,
+        "position": {
+            "x": -5746110750720,
+            "y": 1545356206080,
+            "z": -2041530900480
+        },
+        "system_id": 30000142,
+        "destination": {
+            "system_id": 30000138,
+            "stargate_id": 50013927
+        }
+    },
+    {
+        "stargate_id": 50002198,
+        "name": "Stargate (Jita)",
+        "type_id": 16,
+        "position": {
+            "x": 559771852800,
+            "y": -16186613760,
+            "z": -535867514880
+        },
+        "system_id": 30000145,
+        "destination": {
+            "system_id": 30000142,
+            "stargate_id": 50001250
+        }
+    },
+    {
+        "stargate_id": 50013922,
+        "name": "Stargate (Jita)",
+        "type_id": 16,
+        "position": {
+            "x": 1264172605440,
+            "y": -42385612800,
+            "z": 1496728903680
+        },
+        "system_id": 30000143,
+        "destination": {
+            "system_id": 30000142,
+            "stargate_id": 50013921
+        }
+    },
+    {
+        "stargate_id": 50013927,
+        "name": "Stargate (Jita)",
+        "type_id": 29627,
+        "position": {
+            "x": 2136575139840,
+            "y": -574609367040,
+            "z": 759102136320
+        },
+        "system_id": 30000138,
+        "destination": {
+            "system_id": 30000142,
+            "stargate_id": 50013928
+        }
+    },
+    {
+        "stargate_id": 50000802,
+        "name": "Stargate (Jita)",
+        "type_id": 16,
+        "position": {
+            "x": 5683290316800,
+            "y": 618716160000,
+            "z": 3637064294400
+        },
+        "system_id": 30000140,
+        "destination": {
+            "system_id": 30000142,
+            "stargate_id": 50001248
+        }
+    },
+    {
+        "stargate_id": 50002185,
+        "name": "Stargate (Jita)",
+        "type_id": 16,
+        "position": {
+            "x": 660601774080,
+            "y": 44692316160,
+            "z": 2112967680000
+        },
+        "system_id": 30000144,
+        "destination": {
+            "system_id": 30000142,
+            "stargate_id": 50001249
+        }
+    },
+    {
+        "stargate_id": 50013875,
+        "name": "Stargate (Jita)",
+        "type_id": 29629,
+        "position": {
+            "x": 1826991267840,
+            "y": -2393946316800,
+            "z": -1338694656000
+        },
+        "system_id": 30001363,
+        "destination": {
+            "system_id": 30000142,
+            "stargate_id": 50013876
+        }
+    },
+    {
+        "stargate_id": 50013914,
+        "name": "Stargate (Jita)",
+        "type_id": 29629,
+        "position": {
+            "x": -193808916480,
+            "y": -4432966901760,
+            "z": -1161935953920
+        },
+        "system_id": 30002780,
+        "destination": {
+            "system_id": 30000142,
+            "stargate_id": 50013913
+        }
+    }
+]

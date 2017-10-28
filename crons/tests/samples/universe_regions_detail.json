@@ -12,7 +12,7 @@
         "region_id": 10000016,
         "name": "Lonetrek",
         "constellations": [
-            #20000199
+            20000199
         ],
         "description": "\"Our surveys show that there are many planets capable of sustaining life in these systems. However, the lack of a proper stargate network has drastically increased the travel time for our mission. I think it is worth it. I don't trust those Gallente further than I could throw one, and that isn't very far, given their indulgences.\n\nThe initial speculation for a fallback position seems to be sustainable, but we have one potential problem. The long-range probes we sent out have been reporting some strange readings. Our science teams think they are reading stargates and an adjoining region, which is disturbing. I do not think it possible that the Gallente have yet moved that far. Until we can confirm these readings and determine who or what these stargates belong to, it would be ill-advised to place ourselves in a position where we have our movement restricted on multiple fronts.\"\n\n<i>-Minato Zumari, Caldari Navy Commander </i>"
     },
@@ -20,7 +20,7 @@
         "region_id": 10000033,
         "name": "The Citadel",
         "constellations": [
-            #20000407
+            20000407
         ],
         "description": "Acting as both an ideological fort as well as a physical impediment to invasion, the Citadel is among the most well fortified regions in the cluster. Despite their penchant for squabbling and competing with each other, nearly every Caldari corporation keeps a presence here, all working together to diligently defend their home. After having been ejected from one homeland, the Caldari are not about to suffer such a fate again. The Citadel stands as proud testament to that resolve."
     }
