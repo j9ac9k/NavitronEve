@@ -3,19 +3,8 @@
         "region_id": 10000002,
         "name": "The Forge",
         "constellations": [
-            20000017,
-            20000018,
             20000019,
-            #20000020,
-            20000021,
-            20000022,
-            20000023,
-            20000024,
-            20000025,
-            20000026,
-            20000027,
-            20000028,
-            20000029
+            20000020
         ],
         "description": "\"The greater the State becomes, the greater humanity under it flourishes.\""
     },
@@ -23,21 +12,7 @@
         "region_id": 10000016,
         "name": "Lonetrek",
         "constellations": [
-            20000198,
-            20000199,
-            20000200,
-            20000201,
-            20000202,
-            20000203,
-            20000204,
-            20000205,
-            20000206,
-            20000207,
-            20000208,
-            20000209,
-            20000210,
-            20000211,
-            20000212
+            #20000199
         ],
         "description": "\"Our surveys show that there are many planets capable of sustaining life in these systems. However, the lack of a proper stargate network has drastically increased the travel time for our mission. I think it is worth it. I don't trust those Gallente further than I could throw one, and that isn't very far, given their indulgences.\n\nThe initial speculation for a fallback position seems to be sustainable, but we have one potential problem. The long-range probes we sent out have been reporting some strange readings. Our science teams think they are reading stargates and an adjoining region, which is disturbing. I do not think it possible that the Gallente have yet moved that far. Until we can confirm these readings and determine who or what these stargates belong to, it would be ill-advised to place ourselves in a position where we have our movement restricted on multiple fronts.\"\n\n<i>-Minato Zumari, Caldari Navy Commander </i>"
     },
@@ -45,19 +20,7 @@
         "region_id": 10000033,
         "name": "The Citadel",
         "constellations": [
-            20000401,
-            20000402,
-            20000403,
-            20000404,
-            20000405,
-            20000406,
-            #20000407,
-            20000408,
-            20000409,
-            20000410,
-            20000411,
-            20000412,
-            20000413
+            #20000407
         ],
         "description": "Acting as both an ideological fort as well as a physical impediment to invasion, the Citadel is among the most well fortified regions in the cluster. Despite their penchant for squabbling and competing with each other, nearly every Caldari corporation keeps a presence here, all working together to diligently defend their home. After having been ejected from one homeland, the Caldari are not about to suffer such a fate again. The Citadel stands as proud testament to that resolve."
     }
