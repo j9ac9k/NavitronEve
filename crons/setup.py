@@ -110,7 +110,8 @@ setup(
     ],
     tests_require=[
         'pytest',
-        'pytest_cov'
+        'pytest_cov',
+        'semantic_version'
     ],
     extras_require={
         'dev':[
