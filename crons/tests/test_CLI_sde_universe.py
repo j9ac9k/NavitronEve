@@ -42,6 +42,32 @@ def test_join_map_details():
         pytest.xfail(
             'Unexpected values from join_map_details(): {}'.format(unique_values))
 
+def test_reshape_system_location():
+    """validate reshape_system_location() happypath"""
+    system_df = pd.DataFrame(SAMPLE_SYSTEMS)
+
+    pivoted_df = navitron_sde_universe.reshape_system_location(
+        system_df
+    )
+
+    assert isinstance(pivoted_df, pd.DataFrame)
+    assert 'position' not in list(pivoted_df.columns.values)
+
+    expected_cols = [
+        'constellation_id', 'name', 'planets', 'security_class', 'security_status',
+        'star_id', 'stargates', 'stations', 'system_id', 'x', 'y', 'z'
+    ]
+
+    unique_values, unique_expected = helpers.find_uniques(
+        pivoted_df.columns.values,
+        expected_cols
+    )
+
+    assert unique_expected == []
+    if unique_values:
+        pytest.xfail(
+            'Unexpected values from reshape_system_location(): {}'.format(unique_values))
+
 class TestCLI:
     """validate cli launches and works as users expect"""
     app_command = local['navitron_sde_universe']

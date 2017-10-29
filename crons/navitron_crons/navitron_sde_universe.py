@@ -307,6 +307,33 @@ def join_map_details(
     map_df = map_df.drop(drop_cols, axis=1)
     return map_df
 
+def reshape_system_location(
+        map_df,
+        transform_column='position',
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """pivot system location into a flat key shape
+
+    Args:
+        map_df (:obj:`pandas.DataFrame`): source dataframe to transform
+        transform_column (str, optional): column name to pivot
+        logger (:obj:`logging.logger`, optional): logging handle
+
+    Returns:
+        `pandas.DataFrame`: updated dataframe
+
+    """
+    logger.info('--splitting off column %s', transform_column)
+    pivot_df = pd.DataFrame(list(map_df[transform_column]))
+
+    logger.info('--appending column data back onto frame')
+    map_df = pd.concat([map_df, pivot_df])
+
+    logger.info('--dropping pivot column %s', transform_column)
+    map_df = map_df.drop(transform_column, axis=1)
+
+    return map_df
+
 class NavitronSDEUniverse(cli_core.NavitronApplication):
     """fetch and store traditional SDE data
 
@@ -409,7 +436,17 @@ class NavitronSDEUniverse(cli_core.NavitronApplication):
 
         ## Process data into Mongo-ready shape ##
         self.logger.info('Combining data in Pandas')
-        # TODO
+        map_df = join_map_details(
+            system_info,
+            constellation_info,
+            region_info,
+            logger=self.logger
+        )
+
+        map_df = reshape_system_location(
+            map_df,
+            logger=self.logger
+        )
 
 
 def run_main():
