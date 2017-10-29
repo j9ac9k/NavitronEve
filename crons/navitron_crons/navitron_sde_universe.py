@@ -63,7 +63,7 @@ def get_universe_systems_details(
 
     logger.info('--fetching system details from ESI')
     try:
-        system_info = cli_core.fetch_bulk_data_async(
+        system_info = connections.fetch_bulk_data_async(
             address,
             system_list,
             retry=retry,
@@ -110,7 +110,7 @@ def get_universe_constellations_details(
 
     logger.info('--fetching constellation details from ESI')
     try:
-        constellation_info = cli_core.fetch_bulk_data_async(
+        constellation_info = connections.fetch_bulk_data_async(
             address,
             constellation_list,
             retry=retry,
@@ -157,7 +157,7 @@ def get_universe_regions_details(
 
     logger.info('--fetching region details from ESI')
     try:
-        region_info = cli_core.fetch_bulk_data_async(
+        region_info = connections.fetch_bulk_data_async(
             address,
             region_list,
             retry=retry,
@@ -200,7 +200,7 @@ def get_universe_stargates_details(
     )
     logger.info('--fetching stargate details from ESI')
     try:
-        stargate_info = cli_core.fetch_bulk_data_async(
+        stargate_info = connections.fetch_bulk_data_async(
             base_url,
             stargate_list,
             retry=1,

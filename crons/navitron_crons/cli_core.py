@@ -3,19 +3,15 @@
 Acts as global namespace + parent-framework for CLI apps
 
 """
-from os import path
+from os import path, environ
 import platform
 from datetime import datetime
 import warnings
 import uuid
 import time
-import concurrent
 
 from plumbum import cli
-import requests_futures
-#from requests_futures.sessions import FuturesSession
 
-#from concurrent.futures import as_completed
 import prosper.common.prosper_logging as p_logger
 import prosper.common.prosper_config as p_config
 
@@ -88,7 +84,7 @@ def fetch_bulk_data_async(
         :obj:`list`: data from all enpoints
 
     """
-    session = requests_futures.sessions.FuturesSession(max_workers=workers)
+    session = FuturesSession(max_workers=workers)
     logger.info('--building async request queue for: %s', base_url)
     url_list = [f'{base_url}{id_val}' for id_val in id_list]
     request_queue = []

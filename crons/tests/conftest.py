@@ -3,12 +3,14 @@
 
 ## Stolen from http://doc.pytest.org/en/latest/example/simple.html#incremental-testing-test-steps
 import pytest
-from os import path
+from os import path, environ
 
 import helpers
 
 HERE = path.abspath(path.dirname(__file__))
 ROOT = path.abspath(path.join(path.dirname(HERE), 'navitron_crons'))
+
+environ['PROSPER__TESTMODE'] = 'True'
 
 ## init test space ##
 helpers.setup_dirs()
