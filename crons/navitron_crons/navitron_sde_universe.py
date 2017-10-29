@@ -252,6 +252,60 @@ def parse_stargates_from_systems(
     logger.debug(len(stargates_list))
     return stargates_list
 
+DROP_COLS = [
+    'planets', 'stations', 'constellationPosition', 'systems', 'constellations', 'description'
+]
+def join_map_details(
+        system_info,
+        constellation_info,
+        region_info,
+        drop_cols=list(DROP_COLS),
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """combine all info objects into a dataframe
+
+    Args:
+        system_info (:obj:`list`): /unierse/systems/ details
+        constellation_info (:obj:`list`): /universe/constellations/ details
+        region_info (:obj:`list`): /universe/regions/ details
+        drop_cols (:obj:`list`, optional): list of column names to drop from dataset
+        logger (:obj:`logging.logger`, optional): logging handle
+
+    Returns:
+        `pandas.DataFrame`: by-system summary of map data
+
+    """
+    logger.info('--casting map data into Pandas')
+    map_df = pd.DataFrame(system_info)
+    map_df = map_df.rename(
+        columns={'name':'solarSystemName', 'position':'solarSystemPosition'}
+    )
+
+    constellation_df = pd.DataFrame(constellation_info)
+    constellation_df = constellation_df.rename(
+        columns={'name':'constellationName', 'position':'constellationPosition'}
+    )
+
+    region_df = pd.DataFrame(region_info)
+    region_df = region_df.rename(
+        columns={'name':'regionName'}#, 'position':'regionPosition'}
+    )
+
+    logger.info('--merging dataframes')
+    map_df = map_df.merge(
+        constellation_df,
+        on='constellation_id',
+        how='left'
+    )
+    map_df = map_df.merge(
+        region_df,
+        on='region_id',
+        how='left'
+    )
+
+    logger.info('--dropping redundant columns')
+    map_df = map_df.drop(drop_cols, axis=1)
+    return map_df
 
 class NavitronSDEUniverse(cli_core.NavitronApplication):
     """fetch and store traditional SDE data

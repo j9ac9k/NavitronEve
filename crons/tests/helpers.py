@@ -1,6 +1,7 @@
 """helpers.py: global test helper functions"""
 from os import path, makedirs
 import shutil
+import json
 
 import prosper.common.prosper_logging as p_logging
 import prosper.common.prosper_config as p_config
@@ -61,3 +62,24 @@ def find_uniques(
     logger.info('Unique expected vals: {}'.format(unique_expected))
 
     return unique_test, unique_expected
+
+def load_samples(
+        sample_name,
+        root_dir=path.join(HERE, 'samples')
+):
+    """loads json samples for mock testing
+
+    Args:
+        sample_name (str): name of file (with .json)
+        root_dir (str, optional): path to samples dir
+
+    Returns:
+        :obj:`list`: processed JSON
+
+    """
+    sample_filepath = path.join(root_dir, sample_name)
+    print('Loading sample: {}'.format(sample_filepath))
+    with open(sample_filepath, 'r') as json_fh:
+        data = json.load(json_fh)
+
+    return data
