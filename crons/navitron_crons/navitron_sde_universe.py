@@ -334,6 +334,43 @@ def reshape_system_location(
 
     return map_df
 
+def join_stargate_details(
+        map_df,
+        stargate_info,
+        logger=cli_core.DEFAULT_LOGGER
+):
+    """merge stargate information into map dataframe
+
+    Args:
+        map_df (:obj:`pandas.DataFrame`): source dataframe
+        stargate_info (:obj:`list`): stargate details to merge
+        logger (:obj:`logging.logger`, optional): logging handle
+
+    Returns:
+        `pandas.DataFrame`: updated dataframe
+
+    """
+    logger.info('--Reshaping stargate_info')
+    reworked_stargate_info = {}
+    for stargate in cli.terminal.Progress(stargate_info):
+        if stargate['system_id'] not in reworked_stargate_info:
+            reworked_stargate_info[stargate['system_id']] = []
+
+        reworked_stargate_info[stargate['system_id']].append(stargate['destination']['system_id'])
+
+    logger.info('--casting stargate info into pandas')
+    stargate_df = pd.DataFrame(list(reworked_stargate_info.items()))
+    stargate_df.columns = ['system_id', 'stargates']
+
+    logger.info('--merging stargates and map data')
+    map_df = map_df.merge(
+        stargate_df,
+        on='system_id',
+        how='left'
+    )
+
+    return map_df
+
 class NavitronSDEUniverse(cli_core.NavitronApplication):
     """fetch and store traditional SDE data
 
@@ -448,6 +485,11 @@ class NavitronSDEUniverse(cli_core.NavitronApplication):
             logger=self.logger
         )
 
+        map_df = join_stargate_details(
+            map_df,
+            stargate_info,
+            logger=self.logger
+        )
 
 def run_main():
     """hook for running entry_points"""
