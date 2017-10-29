@@ -111,7 +111,8 @@ setup(
     tests_require=[
         'pytest',
         'pytest_cov',
-        'semantic_version'
+        'semantic_version',
+        'jsonschema'
     ],
     extras_require={
         'dev':[

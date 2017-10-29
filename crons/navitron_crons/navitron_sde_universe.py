@@ -253,7 +253,8 @@ def parse_stargates_from_systems(
     return stargates_list
 
 DROP_COLS = [
-    'planets', 'stations', 'constellationPosition', 'systems', 'constellations', 'description'
+    'planets', 'stations', 'constellation_position', 'systems', 'constellations',
+    'description', 'stargates'
 ]
 def join_map_details(
         system_info,
@@ -278,17 +279,17 @@ def join_map_details(
     logger.info('--casting map data into Pandas')
     map_df = pd.DataFrame(system_info)
     map_df = map_df.rename(
-        columns={'name':'solarSystemName', 'position':'solarSystemPosition'}
+        columns={'name':'solarsystem_name', 'position':'solarsystem_position'}
     )
 
     constellation_df = pd.DataFrame(constellation_info)
     constellation_df = constellation_df.rename(
-        columns={'name':'constellationName', 'position':'constellationPosition'}
+        columns={'name':'constellation_name', 'position':'constellation_position'}
     )
 
     region_df = pd.DataFrame(region_info)
     region_df = region_df.rename(
-        columns={'name':'regionName'}#, 'position':'regionPosition'}
+        columns={'name':'region_name'}#, 'position':'regionPosition'}
     )
 
     logger.info('--merging dataframes')
@@ -309,7 +310,7 @@ def join_map_details(
 
 def reshape_system_location(
         map_df,
-        transform_column='position',
+        transform_column='solarsystem_position',
         logger=cli_core.DEFAULT_LOGGER
 ):
     """pivot system location into a flat key shape
@@ -327,7 +328,7 @@ def reshape_system_location(
     pivot_df = pd.DataFrame(list(map_df[transform_column]))
 
     logger.info('--appending column data back onto frame')
-    map_df = pd.concat([map_df, pivot_df])
+    map_df = pd.concat([map_df, pivot_df], axis=1)
 
     logger.info('--dropping pivot column %s', transform_column)
     map_df = map_df.drop(transform_column, axis=1)
