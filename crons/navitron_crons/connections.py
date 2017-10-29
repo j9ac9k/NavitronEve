@@ -9,7 +9,7 @@ import time
 import requests
 import pymongo
 from plumbum import cli
-from requests_futures.sessions import FuturesSession
+
 
 import navitron_crons.exceptions as exceptions
 import navitron_crons.cli_core as cli_core
@@ -81,6 +81,7 @@ def fetch_bulk_data_async(
         :obj:`list`: data from all enpoints
 
     """
+    from requests_futures.sessions import FuturesSession  # pytest & plumbum & pytest = FAIL
     session = FuturesSession(max_workers=workers)
     logger.info('--building async request queue for: %s', base_url)
     url_list = [f'{base_url}{id_val}' for id_val in id_list]
