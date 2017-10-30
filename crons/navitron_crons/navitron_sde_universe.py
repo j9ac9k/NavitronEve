@@ -430,6 +430,26 @@ class NavitronSDEUniverse(cli_core.NavitronApplication):
                 self.logger.debug(system_info[0])
 
 
+        if self.all_data or self.stargates:
+            self.logger.info('Fetching stargate information')
+            with Timer() as parse_stargates_timer:
+                stargate_list = parse_stargates_from_systems(
+                    system_info,
+                    logger=self.logger
+                )
+                self.logger.info('TIMER: parse_stargates_timer -- %s', parse_stargates_timer)
+
+            with Timer() as stargate_info_timer:
+                stargate_info = get_universe_stargates_details(
+                    self.config,
+                    stargate_list,
+                    #workers=40,
+                    logger=self.logger
+                )
+                self.logger.info('TIMER: stargate_info_timer -- %s', stargate_info_timer)
+                self.logger.debug(stargate_info[0])
+
+
         if self.all_data or self.constellations:
             self.logger.info('Fetching constellation information')
             with Timer() as constellation_info_timer:
@@ -452,45 +472,90 @@ class NavitronSDEUniverse(cli_core.NavitronApplication):
                 self.logger.debug(region_info[0])
 
 
-        if self.all_data or self.stargates:
-            self.logger.info('Fetching stargate information')
-            with Timer() as parse_stargates_timer:
-                stargate_list = parse_stargates_from_systems(
-                    system_info,
-                    logger=self.logger
-                )
-                self.logger.info('TIMER: parse_stargates_timer -- %s', parse_stargates_timer)
-
-            with Timer() as stargate_info_timer:
-                stargate_info = get_universe_stargates_details(
-                    self.config,
-                    stargate_list,
-                    workers=40,
-                    logger=self.logger
-                )
-                self.logger.info('TIMER: stargate_info_timer -- %s', stargate_info_timer)
-                self.logger.debug(stargate_info[0])
-
-
         ## Process data into Mongo-ready shape ##
         self.logger.info('Combining data in Pandas')
-        map_df = join_map_details(
-            system_info,
-            constellation_info,
-            region_info,
-            logger=self.logger
-        )
+        try:
+            map_df = join_map_details(
+                system_info,
+                constellation_info,
+                region_info,
+                logger=self.logger
+            )
+            map_df = reshape_system_location(
+                map_df,
+                logger=self.logger
+            )
+            map_df = join_stargate_details(
+                map_df,
+                stargate_info,
+                logger=self.logger
+            )
+            # TODO: Drop Jove, Polaris, and w-space systems
+        except Exception:
+            self.logger.error(
+                '%s: Unable to format SDE for mongo',
+                self.PROGNAME,
+                exc_info=True
+            )
+            raise
 
-        map_df = reshape_system_location(
-            map_df,
-            logger=self.logger
-        )
 
-        map_df = join_stargate_details(
-            map_df,
-            stargate_info,
-            logger=self.logger
+        ## Send data into MongoDB ##
+        if not self.force:
+            self.logger.warning('NOT IMPLEMENTED -- SDE UPDATE ONLY')
+            self.logger.info('Setting `--force`')
+            self.force = True
+
+        if self.force:
+            self.logger.warning('CLEARING EXISTING DATA')
+            for seconds in cli.terminal.Progress(range(1,10)):
+                time.sleep(1)
+            try:
+                connections.clear_collection(
+                    SDE_UNIVERSE_COLLECTION,
+                    self.conn,
+                    debug=self.debug,
+                    logger=self.logger
+                )
+            except Exception:
+                self.logger.error(
+                    '%s: Unable to clear SDE data from existing MongoDB',
+                    self.PROGNAME,
+                    exc_info=True
+                )
+                raise
+
+        metadata_obj = cli_core.generate_metadata(
+            self.PROGNAME,
+            self.VERSION
         )
+        map_df['write_recipt'] = metadata_obj['write_recipt']
+        map_df['cron_datetime'] = metadata_obj['cron_datetime']
+
+        self.logger.info('Pushing data to database')
+        try:
+            connections.dump_to_db(
+                map_df,
+                self.PROGNAME,
+                self.conn,
+                debug=self.debug,
+                logger=self.logger
+            )
+            connections.write_provenance(
+                metadata_obj,
+                self.conn,
+                debug=self.debug,
+                logger=self.logger
+            )
+        except Exception:
+            self.logger.error(
+                '%s: Unable to write data to database',
+                self.PROGNAME,
+                exc_info=True
+            )
+            raise
+
+        self.logger.info('%s: Complete -- Have a nice day', self.PROGNAME)
 
 def run_main():
     """hook for running entry_points"""

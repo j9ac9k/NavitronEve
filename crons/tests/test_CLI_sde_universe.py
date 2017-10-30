@@ -150,7 +150,8 @@ def test_schema_check():
     #    json.dump(map_raw_data, json_fh, indent=2)
 
     jsonschema.validate(map_raw_data, SDE_SCHEMA)
-    #assert False
+
+
 class TestCLI:
     """validate cli launches and works as users expect"""
     app_command = local['navitron_sde_universe']

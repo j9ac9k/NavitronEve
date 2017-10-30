@@ -172,54 +172,22 @@ DATA_PROJECTION = {
     'metadata': False,
     'write_recipt': False
 }
-def fetch_current_sde(
-        collection_name,
-        conn,
-        query={},
-        projection=DATA_PROJECTION,
-        logger=cli_core.DEFAULT_LOGGER
-):
-    """fetch current SDE collection
-
-    Args:
-        collection_name (str): name of SDE collection/table
-        conn (:obj:`MongoConnection`): connection hnadle
-        query (:obj:`dict`, optional): filtering query
-        projection (:obj:`dict`, optional): pymongo projection (think SELECT)
-        logger (:obj:`logging.logger`, optional): logging handle
-
-    Returns:
-        :obj:`pandas.DataFrame`
-
-    """
-    logger.info('--fetching existing SDE data: %s', collection_name)
-
-    with conn as db_conn:
-        raw_data = list(db_conn[collection_name].\
-            find(query, projection=projection)
-        )
-
-    if not raw_data:
-        logger.warning('NO SDE DATA FOUND IN %s', collection_name)
-        raise exceptions.NoSDEDataFound
-
-    logger.info('--pushing data into Pandas')
-    data_df = pd.DataFrame(raw_data)
-
-    logger.debug(data_df.head(5))
-
-    return data_df
 
 def clear_collection(
         collection_name,
         conn,
         query={},
+        debug=False,
         logger=cli_core.DEFAULT_LOGGER
 ):
     """removes invalid documents from collection
 
     TODO
     """
+    if debug:
+        logger.warning('DEBUG MODE -- skipping delete step')
+        return
+
     logger.info('--deleting data from: %s', collection_name)
     logger.info(query)
 
