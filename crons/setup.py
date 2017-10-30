@@ -118,6 +118,11 @@ setup(
         'dev':[
             'sphinx',
             'sphinxcontrib-napoleon',
+        ],
+        'datasci':[
+            'plotnine',
+            'ipykernel',
+            'bokeh'
         ]
     },
     cmdclass={
