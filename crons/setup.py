@@ -36,7 +36,7 @@ class PyTest(TestCommand):
         """declare pytest CLI command"""
         TestCommand.initialize_options(self)
         self.pytest_args = [
-            'Tests',
+            'tests',
             '-rx',
             '-v',
             '--cov=' + __package_name__,
