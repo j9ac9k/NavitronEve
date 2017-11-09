@@ -297,7 +297,7 @@ def dump_to_db(
         db_conn[collection_name].insert_many(raw_data)
 
 
-CONNECTION_STR = 'mongodb://{username}:{{password}}@{hostname}:{port}/{database}?{args}'
+CONNECTION_STR = 'mongodb://{username}:{{password}}@{hostname}:{port}/{database}'
 class MongoConnection(object):
     """hacky session manager for pymongo con/curr
 
@@ -343,18 +343,22 @@ class MongoConnection(object):
             config.get('MONGO', 'hostname'),
             config.get('MONGO', 'port'),
             config.get('MONGO', 'database'),
-            config.get('MONGO', 'args')
+            #config.get('MONGO', 'args')
         ])
 
         self.password = config.get('MONGO', 'password')
-
-        return connection_str.format(
+        mongo_address = connection_str.format(
             username=config.get('MONGO', 'username'),
             hostname=config.get('MONGO', 'hostname'),
             port=config.get('MONGO', 'port'),
-            database=config.get('MONGO', 'database'),
-            args=config.get('MONGO', 'args')
+            database=config.get('MONGO', 'database')
         )
+        if config.get('MONGO', 'args'):
+            mongo_address = '{mongo_address}?{args}'.format(
+                mongo_address=mongo_address,
+                args=config.get('MONGO', 'args')
+            )
+        return mongo_address
 
     def __bool__(self):
         return self.ready_to_query
