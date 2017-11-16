@@ -4,6 +4,7 @@ from datetime import datetime
 import warnings
 
 import pandas as pd
+import retry
 
 import navitron_crons.exceptions as exceptions
 import navitron_crons.connections as connections
@@ -15,6 +16,7 @@ HERE = path.abspath(path.dirname(__file__))
 __app_version__ = _version.__version__
 __app_name__ = 'navitron_server_status'
 
+@retry.retry(tries=3, delay=300)
 def get_server_status(
         config,
         logger=cli_core.DEFAULT_LOGGER

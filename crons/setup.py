@@ -105,7 +105,8 @@ setup(
         'esipy~=0.1.8',
         'pandas~=0.20.3',
         'pymongo~=3.5.1',
-        'contexttimer~=0.3.3'
+        'contexttimer~=0.3.3',
+        'retry~=0.9.2'
 
     ],
     tests_require=[

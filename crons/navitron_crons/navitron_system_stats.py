@@ -4,6 +4,7 @@ from datetime import datetime
 import warnings
 
 import pandas as pd
+import retry
 
 import navitron_crons.exceptions as exceptions
 import navitron_crons.connections as connections
@@ -14,6 +15,7 @@ HERE = path.abspath(path.dirname(__file__))
 
 __app_version__ = _version.__version__
 __app_name__ = 'navitron_system_stats'
+
 
 def get_system_jumps(
         config,
@@ -91,9 +93,15 @@ class NavitronSystemStats(cli_core.NavitronApplication):
 
         self.logger.info('Fetching system info: Jumps')
         try:
-            system_jumps_df = get_system_jumps(
-                config=self.config,
-                logger=self.logger
+            # only retry first call.  Fail otherwise
+            system_jumps_df = retry.api.retry_call(
+                get_system_jumps,
+                fkwargs={
+                    'config': self.config,
+                    'logger':self.logger
+                },
+                tries=3,
+                delay=300
             )
         except Exception:  # pragma: no cover
             self.logger.error(
