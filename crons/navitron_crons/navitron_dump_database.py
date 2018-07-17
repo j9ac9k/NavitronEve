@@ -18,20 +18,24 @@ PROGNAME = 'dump_database'
 def dump_progress(
         file_name,
         raw,
-        drop_cols=('_id', 'write_recipt'),
+        drop_cols=('_id'),
         logger=logging.getLogger(PROGNAME),
 ):
     """TODO"""
+    if not raw:
+        logger.info('no data to write')
+        return
     df = pd.DataFrame(raw)
-    #logger.debug(df.columns.values)
+    # logger.debug(df.columns.values)
     df.drop(drop_cols, axis=1, inplace=True)
+    if not os.path.isfile(file_name):
+        logger.debug('creating new csv')
+        df.to_csv(file_name, index=False)
+        return
 
-    try:
-        archive_df = pd.read_csv(file_name)
-        archive_df.append(df, ignore_index=True)
-    except FileNotFoundError:
-        archive_df = df
-
+    archive_df = pd.read_csv(file_name)
+    archive_df = pd.concat([archive_df, df], ignore_index=True)
+    # logger.debug(archive_df.shape)
     archive_df.to_csv(file_name, index=False)
 
 class DumpDatabaseCLI(p_cli.ProsperApplication):
@@ -99,12 +103,12 @@ class DumpDatabaseCLI(p_cli.ProsperApplication):
                     dump_progress(file_name, raw)
                     count = 0
                     raw = []
-            try:
-                dump_progress(file_name, raw)
-            except Exception:
-                self.logger.warning('Failed to dump final data blob', exc_info=True)
-                with open(file_name.replace('csv', '_ERR.json')) as j_fh:
-                    json.dump(raw, j_fh)
+            #try:
+            dump_progress(file_name, raw)
+            #except Exception:
+            #    self.logger.warning('Failed to dump final data blob', exc_info=True)
+            #    with open(file_name.replace('csv', '_ERR.json'), 'w') as j_fh:
+            #        json.dump(raw, j_fh)
 
 def run_main():
     """entry-point wrapper"""
