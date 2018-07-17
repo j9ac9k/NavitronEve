@@ -4,6 +4,7 @@ import os
 import logging
 import time
 import json
+import uuid
 
 import pymongo
 import pandas as pd
@@ -15,28 +16,64 @@ from . import _version, connections, exceptions
 HERE = os.path.abspath(os.path.dirname(__file__))
 PROGNAME = 'dump_database'
 
-def dump_progress(
-        file_name,
-        raw,
+def dump_increment(
+        data,
+        data_name,
         drop_cols=('_id'),
+        folder_path='temp'
+):
+    """dump data to disk incrementally
+
+    Args:
+        data (list): Current collection of raw data from MongoDB
+        data_name (str): name of outfile ('csv')
+        drop_cols (tuple): columns to exclude from final data push
+        folder_path (str): Path to dump-folder for partial records
+
+    Returns:
+        str: name of file dumped (data_name + UUID)
+
+    """
+    os.makedirs(folder_path, exist_ok=True)
+    file_name = os.path.join(
+        folder_path,
+        os.path.basename(data_name).replace('.csv', str(uuid.uuid1()) + '.json')
+    )
+    df = pd.DataFrame(data).drop(drop_cols, axis=1)
+    df.to_json(file_name, orient='records')
+
+    return file_name
+
+def zip_results(
+        file_list,
+        outfile,
+        debug=False,
         logger=logging.getLogger(PROGNAME),
 ):
-    """TODO"""
-    if not raw:
-        logger.info('no data to write')
-        return
-    df = pd.DataFrame(raw)
-    # logger.debug(df.columns.values)
-    df.drop(drop_cols, axis=1, inplace=True)
-    if not os.path.isfile(file_name):
-        logger.debug('creating new csv')
-        df.to_csv(file_name, index=False)
-        return
+    """combine partial results into one big file
 
-    archive_df = pd.read_csv(file_name)
-    archive_df = pd.concat([archive_df, df], ignore_index=True)
-    # logger.debug(archive_df.shape)
-    archive_df.to_csv(file_name, index=False)
+    Notes:
+        expects `orient='records'` json format
+        will delete files if `debug=False`
+
+    Args:
+        file_list (list): a list of .JSON files to combine together
+        outfile (str): filepath to write results to
+        debug (bool): toggle file deletion
+        logger (:obj:`logging.logger`): logging handle
+
+    """
+    data = pd.DataFrame()
+    for file in cli.terminal.Progress(file_list):
+        data = pd.concat(
+            [data, pd.read_json(file, orient='records')], ignore_index=True
+        )
+        if not debug:
+            os.remove(file)
+
+    logger.info('Dumping file: %s', outfile)
+    data.to_csv(outfile)
+
 
 class DumpDatabaseCLI(p_cli.ProsperApplication):
     PROGNAME = PROGNAME
@@ -86,29 +123,32 @@ class DumpDatabaseCLI(p_cli.ProsperApplication):
                 collection=collection.replace('_', '-'),
                 date=now.strftime('%Y-%m-%d')
             )
-            self.logger.info('priming dump file: %s', file_name)
+            self.logger.info('--priming dump file: %s', file_name)
             if os.path.isfile(file_name):
-                self.logger.warning('deleting file: %s', file_name)
-                time.sleep(10)
+                self.logger.warning('--deleting file: %s', file_name)
+                time.sleep(self.sleep)
                 os.remove(file_name)
 
             count = 0
             raw = []
+            results = []
             for row in cli.terminal.Progress(data, length=data.count()):
                 count += 1
                 raw.append(row)
 
                 if count >= self.dump_rate:
-                    #self.logger.info('dropping progress')
-                    dump_progress(file_name, raw)
+                    results.append(dump_increment(raw, file_name))
                     count = 0
                     raw = []
-            #try:
-            dump_progress(file_name, raw)
-            #except Exception:
-            #    self.logger.warning('Failed to dump final data blob', exc_info=True)
-            #    with open(file_name.replace('csv', '_ERR.json'), 'w') as j_fh:
-            #        json.dump(raw, j_fh)
+
+            results.append(dump_increment(raw, file_name))
+
+            self.logger.info('--zipping up results')
+            zip_results(
+                results,
+                file_name,
+                debug=self.debug,
+            )
 
 def run_main():
     """entry-point wrapper"""
