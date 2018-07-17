@@ -94,11 +94,12 @@ setup(
         'console_scripts': [
             'navitron_system_stats=navitron_crons.navitron_system_stats:run_main',
             'navitron_sde_universe=navitron_crons.navitron_sde_universe:run_main',
-            'navitron_server_status=navitron_crons.navitron_server_status:run_main'
+            'navitron_server_status=navitron_crons.navitron_server_status:run_main',
+            'navitron_dump_database=navitron_crons.navitron_dump_database:run_main',
         ]
     },
     install_requires=[
-        'prospercommon~=1.1.1',
+        'prospercommon',
         'plumbum~=1.6.3',
         'requests>=2.18.4,<3',
         'requests-futures~=0.9.7',
