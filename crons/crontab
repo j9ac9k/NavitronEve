@@ -1,0 +1,2 @@
+0 * * * * navitron_system_stats --config=/run/secrets/cron_config
+0 * * * * navitron_server_status --config=/run/secrets/cron_config

@@ -103,9 +103,9 @@ setup(
         'plumbum~=1.6.3',
         'requests>=2.18.4,<3',
         'requests-futures~=0.9.7',
-        'esipy~=0.1.8',
+        'esipy~=0.5.0',
         'pandas~=0.20.3',
-        'pymongo~=3.5.1',
+        'pymongo~=3.7.1',
         'contexttimer~=0.3.3',
         'retry~=0.9.2'
 

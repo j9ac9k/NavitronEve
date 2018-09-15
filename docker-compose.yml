@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+  cron:
+    build: cron
+      dockerfile: crons_Dockerfile
+    container_name: navitron_cron_jumps
+    secrets:
+      - cron_config
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo:latest
+    container_name: navitron_mongo
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      # - MONGO_LOG_DIR=/dev/null  # what?
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles 
+secrets:
+  cron_config:
+    file: ./cron_app_local.cfg

@@ -2,10 +2,10 @@ language: python
 python:
   - "3.6"
 install: 
-  - "pip install -r requirements.txt"
+  - "pip install crons/"
   #TODO: setup.py
 script:
-  - "pytest tests/"
+  - "python crons/setup.py test"
 after_success:
   - "pip install python-coveralls"
   - "coveralls"

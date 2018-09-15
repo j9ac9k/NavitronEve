@@ -1,0 +1,6 @@
+FROM 3.7.0-alpine3.8
+
+COPY crons /opt/navitron/crons
+RUN pip install /opt/navitron/crons
+
+CMD cp /opt/navitron/crons/crontab /etc/crontabs/root && /usr/sbin/crond -f
